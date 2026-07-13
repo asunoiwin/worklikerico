@@ -1,0 +1,4 @@
+interface:
+  display_name: "Work Like Rico"
+  short_description: "以 Rico 的证据、自主、根因与闭环原则推进工作"
+  default_prompt: "Use $work-like-rico to handle this task with evidence-first bounded autonomy and verifiable closure."
