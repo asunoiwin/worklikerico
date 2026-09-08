@@ -1,6 +1,6 @@
 # H01/H03 本地验收记录
 
-时间：2026-09-08，macOS 26.5.2 arm64。所有测试使用 `HERMES_HOME=${HOME}/.config/worklikerico/hermes`。GPT provider 已完成原生 OAuth；消息平台仍未启用；当前已安装并运行原生用户级 gateway service；没有发送外部消息。
+时间：2026-09-08，macOS 26.5.2 arm64。所有测试使用 `HERMES_HOME=${HOME}/.config/worklikerico/hermes`。GPT provider 已完成原生 OAuth，MiMo Token Plan 已通过原生短文本调用；消息平台仍未启用；当前已安装并运行原生用户级 gateway service；没有发送外部消息。
 
 | 检查 | 结果 | 证据与边界 |
 |---|---|---|
@@ -9,7 +9,7 @@
 | CLI | PASS | `Hermes Agent v0.21.1 (2026.9.7)`，OpenAI SDK 2.24.0 |
 | `config check` | PASS | schema v41；渠道均 disabled；provider auth 由独立命令验收 |
 | `doctor` | 有限 PASS | runtime/SQLite/核心包和 Telegram SDK 通过；H01 快照当时 provider 未登录、浏览器未装；独立 venv 因不在 checkout 内触发已知路径警告。doctor 退出 0 不能替代阅读结果 |
-| 私有数据隔离 | PASS | H01 初始为 0 memory、0 session、state DB 0 sessions，无 Codex managed block；后续 OAuth 由授权任务独立写入，没有复制 Codex auth；只有上游 bundled skills/default SOUL 和明确接入的 `work-like-rico` |
+| 私有数据隔离 | PASS | H01 初始为 0 memory、0 session、state DB 0 sessions，无 Codex managed block；后续 OAuth 由授权任务独立写入，没有复制 Codex auth；初始仅有上游 bundled skills/default SOUL 和明确接入的 `work-like-rico`；随后用本仓短工作角色替换 SOUL，原文件已私有备份 |
 | Telegram 空 allowlist | PASS（拒绝） | 固定版本 adapter 本地调用：未知 DM=false，未知群发件人=false，无网络 |
 | WeCom 空 allowlist | PASS（拒绝） | `dm_policy/group_policy=allowlist` 时未知 DM=false、未知群=false，无网络 |
 | 项目 preflight | PASS | 安全模板通过；把 Telegram 改为 enabled + `allow_from: ['*']` 后退出 1 |
@@ -22,21 +22,23 @@
 | Kanban blocked canary | PASS，发现语义边界 | `--initial-status blocked` 若没有 typed block reason，会被 promotion pass 自动推到 ready；随后显式 `block --kind needs_input` 才稳定为 blocked。不能只看 create 返回对象 |
 | GPT 订阅模型调用 | PASS | `openai-codex` 为 logged in；`gpt-5.4-mini` 纯文本请求约 4.02 秒返回指定内容；无 API Key、fallback 或 gateway |
 | GPT 合成本地文件任务 | PASS | 私有临时目录内预加载 `work-like-rico`，约 15.63 秒正确写出 2 条未完成虚构待办；结果文件存在、内容顺序正确，输入 SHA-256 前后相同 |
-| Telegram/企业微信实网 | NOT RUN | 缺 token/租户权限；adapter 配置仍 disabled |
+| MiMo 订阅模型调用 | PASS | 原生 `xiaomi` / `mimo-v2.5-pro` 无工具短文本约 3.82 秒成功；默认仍为 GPT，无 fallback；后台重启后由 launchd 监督运行 |
+| 原生后台本地资料任务 | PASS（纠正后） | 同一任务自动领取、执行并生成真实计划摘要；输入哈希一致，首次与第二次内容不合格，第三次内容复验通过，详见下文 |
+| Telegram/企业微信实网 | NOT RUN | 企业微信可见登录页；Telegram 未取得可用接入条件；adapter 配置仍 disabled |
 
-当前保留状态：cron 无 job；gateway 由 launchd 运行；失败 probe 的 job/script 已移除；Kanban canary 为 typed blocked，不会被 dispatcher 执行。
+当前保留状态：cron 无 job；gateway 由 launchd 运行；失败 probe 的 job/script 已移除；Kanban canary 已在保留快照后归档，未归档任务仅有已完成的真实本地资料任务，无待执行任务。
 
-GPT 验证只覆盖订阅推理和隔离的合成本地文件读写。真实资料处理、社交收件、自动回复、定时任务和无人值守闭环仍未验证。本机依赖 HTTP 代理时，Hermes 私有 `.env` 需要显式提供 `HTTP_PROXY=http://localhost:PORT`、`HTTPS_PROXY=http://localhost:PORT` 和本机 `NO_PROXY`；不要把私人代理地址或凭据写入仓库。
+GPT 已覆盖订阅推理、本地文件读写与一次原生后台资料整理。MiMo 仅验证无工具短文本回复。社交收件、自动回复、模型定时任务和持续日常运行仍未验收。本机依赖 HTTP 代理时，Hermes 私有 `.env` 需要显式提供 `HTTP_PROXY=http://localhost:PORT`、`HTTPS_PROXY=http://localhost:PORT` 和本机 `NO_PROXY`；不要把私人代理地址或凭据写入仓库。
 
 ## 独立审计修复记录
 
 2026-09-08 的独立复验发现：模板曾公开 `WECOM_GROUP_ALLOWED_CHATS`，但 preflight 没有检查它，写成 `*` 仍退出 0。根因是模板与校验器各自维护范围字段，字段集合发生偏差；而固定上游 v0.21.1 实际并不消费这个变量。
 
-修复已完成，状态为**待独立复验**：
+修复已完成，配置范围的独立定向复验 **PASS**；真实渠道仍未验收：
 
 - 从模板移除无效的 `WECOM_GROUP_ALLOWED_CHATS`，并让 preflight 明确拒绝它及同类的 `WECOM_GROUP_ALLOWED_USERS`，避免配置看似生效、实际没有边界。
 - 把固定上游实际消费的全局、Telegram、企业微信身份和群范围纳入同一测试矩阵，包括 `GATEWAY_ALLOWED_USERS`、Telegram 三个范围变量、企业微信 YAML 群范围及 `groups.<id>.allow_from`。
-- 本地回归覆盖每个范围字段的通配符拒绝、allow-all 拒绝、已启用平台空 DM 范围拒绝，以及明确非通配范围通过。自测通过不替代独立复验，原独立审计 FAIL 仍以复验结果为准。
+- 本地回归覆盖每个范围字段的通配符拒绝、allow-all 拒绝、已启用平台空 DM 范围拒绝，以及明确非通配范围通过。独立复验直接运行原失败输入与合法范围、通配符、allow-all、缺范围及遗留变量矩阵，结果均符合预期。
 
 本次没有重跑 cron。此前 cron 的真实 tick、失败台账与退出码语义证据未受配置校验器修改影响。
 
@@ -62,3 +64,15 @@ GPT 验证只覆盖订阅推理和隔离的合成本地文件读写。真实资�
 `--no-start-now` 与 `--start-on-login` 在本机组合使用时，launchd 加载含 `RunAtLoad` 的 plist 后仍立即启动。该安装已经构成一次启动，因此没有再调用 `hermes gateway start`。当前服务保持运行。
 
 回滚：先运行 `hermes gateway stop`，再运行 `hermes gateway uninstall`；这只移除后台入口，保留隔离 Home 与台账。
+
+## 默认工作角色与原生后台任务
+
+本仓 `integrations/hermes/SOUL.md` 已应用到隔离 Hermes Home，原上游角色有私有备份。规则来自明确要求及历史任务：简单优先、授权内直接执行、保留源文件、检查当前结果、有事再提醒。未添加固定提醒频率或性格推断。隔离服务目录下的 `prompt-size --json` 确认额外 AGENTS/cwd 上下文为 0。
+
+任务 `t_64ad4552` 由原生 gateway 自动领取，读取当时的实施状态、计划和实际 git 状态，生成一份简短本地摘要。没有手动 dispatch，没有新调度器，也没有发送外部消息。三次运行的输入哈希均保持一致：
+
+- run 2：执行链路通过，但内容重复询问已有授权并凭空增加一页计划，内容验收不通过。
+- run 3：消除重复确认后仍增加无必要的整理工作，内容验收仍不通过。
+- run 4：补充“建议动作必须有当前可执行的未完成事实，否则写暂无”后，同一任务复验通过。原产物与失败历史均保留。
+
+该任务的输入冻结在 MiMo 接入前，因此原产物仍将 MiMo 写为待接入；这是输入快照的边界，不是当前状态。订阅现状以本次独立调用结果和订阅说明为准。此任务证明一次本地资料任务可后台自动执行，不能推导为社交收件或长期无人值守已验收。

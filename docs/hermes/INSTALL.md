@@ -11,7 +11,7 @@ ${HOME}/.config/worklikerico/hermes              # 隔离 HERMES_HOME
 ${HOME}/.local/bin/hermes                        # 默认使用隔离 Home 的短命令入口
 ```
 
-不要运行上游的一键安装脚本；下面的命令复用了该脚本的 locked sync，并额外启用固定 lock 中的 `messaging` extra，因为 Telegram 是明确目标。没有执行交互 setup、浏览器安装、gateway 安装、auth 导入或 Codex 配置迁移。
+不要运行上游的一键安装脚本；下面的命令复用了该脚本的 locked sync，并额外启用固定 lock 中的 `messaging` extra，因为 Telegram 是明确目标。以下基础安装步骤不包含交互 setup、浏览器安装、gateway 安装、auth 导入或 Codex 配置迁移；本机后续实际接入见订阅说明与验收记录。
 
 从统一仓库根目录运行；以下步骤用于新安装，已有配置和入口应先检查再保留：
 
@@ -44,8 +44,9 @@ test ! -e "${HOME}/.local/bin/hermes" && \
 # -n 保留既有配置；新文件只供本人读取。
 cp -n integrations/hermes/config.template.yaml "${HOME}/.config/worklikerico/hermes/config.yaml"
 cp -n integrations/hermes/env.template "${HOME}/.config/worklikerico/hermes/.env"
+cp -n integrations/hermes/SOUL.md "${HOME}/.config/worklikerico/hermes/SOUL.md"
 chmod 700 "${HOME}/.config/worklikerico/hermes"
-chmod 600 "${HOME}/.config/worklikerico/hermes/config.yaml" "${HOME}/.config/worklikerico/hermes/.env"
+chmod 600 "${HOME}/.config/worklikerico/hermes/config.yaml" "${HOME}/.config/worklikerico/hermes/.env" "${HOME}/.config/worklikerico/hermes/SOUL.md"
 ```
 
 确保 `${HOME}/.local/bin` 已在 PATH 中；否则可以先使用 `${HOME}/.local/bin/hermes`。
@@ -82,7 +83,9 @@ launchctl print "gui/$(id -u)/ai.hermes.gateway"
 
 实际生成 `${HOME}/Library/LaunchAgents/ai.hermes.gateway.plist`，运行目录、日志目录和 `HERMES_HOME` 均指向 `${HOME}/.config/worklikerico/hermes`。macOS 加载带 `RunAtLoad` 的 LaunchAgent 后立即启动了 gateway，因此即使传入 `--no-start-now`，这组参数仍产生了一次实际启动；没有再运行 `hermes gateway start`。
 
-当前 launchd 和 gateway 子进程均存活，`hermes gateway status` 报告由 launchd 监督并支持登录自启/崩溃重启。启动日志明确记录 0 个 channel target、Telegram/企业微信均 disabled、cron 为空；唯一 Kanban canary 仍为带 `needs_input` 原因的 blocked 状态。日志没有 agent dispatch、provider/API 请求或消息收发，因此这次只验证后台调度外壳，没有发起新的模型调用。
+首次服务验收时，launchd 和 gateway 子进程均存活，`hermes gateway status` 报告由 launchd 监督并支持登录自启/崩溃重启。启动日志明确记录 0 个 channel target、Telegram/企业微信均 disabled、cron 为空；当时唯一 Kanban canary 为带 `needs_input` 原因的 blocked 状态。日志没有 agent dispatch、provider/API 请求或消息收发，因此这次只验证后台调度外壳，没有发起新的模型调用。
+
+后续已完成原生后台本地资料任务、归档 canary，并在 MiMo 接入后重启服务；最新边界见[实测记录](VERIFICATION.md)。
 
 停止并卸载后台入口使用原生命令：
 
@@ -137,3 +140,7 @@ unlink "${HOME}/.local/bin/hermes"
 - [release v2026.9.7](https://github.com/NousResearch/hermes-agent/releases/tag/v2026.9.7)
 - [安装文档](https://github.com/NousResearch/hermes-agent/blob/v2026.9.7/website/docs/getting-started/installation.md)
 - [固定依赖与 Python 范围](https://github.com/NousResearch/hermes-agent/blob/v2026.9.7/pyproject.toml)
+
+## 默认工作要求
+
+`integrations/hermes/SOUL.md` 提供简短的默认工作要求，普通对话也会加载。新安装使用上面的 `cp -n` 保留既有自定义角色；本机初次应用前已私有备份上游默认角色。工程或长期任务再按需读取 `work-like-rico` 技能，不把每件日常小事变成重型流程。

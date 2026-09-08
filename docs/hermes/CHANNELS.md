@@ -36,7 +36,7 @@ hermes_bin="${HOME}/.local/share/worklikerico/hermes-venv/bin/hermes"
 2. 先由目标用户向 bot 发消息；用 `/whoami` 或 gateway 日志确认数值 user ID。
 3. 把 `TELEGRAM_BOT_TOKEN` 和唯一允许的 `TELEGRAM_ALLOWED_USERS` 写入隔离 `HERMES_HOME/.env`；群 allowlist 初始留空。
 4. 在 `config.yaml` 把 `platforms.telegram.enabled` 改为 `true`；保持 `guest_mode: false`、`observe_unmentioned_group_messages: false`。
-5. 前台运行 `hermes gateway`，真实测试一条新私聊消息和回复。通过后才考虑用户服务。
+5. 本机已有用户服务时先停止它，再前台运行 `hermes gateway` 测试一条新私聊消息和回复；通过后恢复用户服务，避免同时运行两个 gateway。
 
 Telegram 内建接入不能读取个人账号旧历史。若以后启用群消息，先分别填 sender 和 chat allowlist；不要用 `*`。BotFather 隐私模式默认开启，是否关闭必须按群范围单独决定。
 
@@ -46,7 +46,7 @@ Telegram 内建接入不能读取个人账号旧历史。若以后启用群消�
 2. 把 `WECOM_BOT_ID`、`WECOM_SECRET` 写入隔离 `.env`。
 3. 先取得获准的 user ID；把 `dm_policy` 保持为 `allowlist` 并填写 `allow_from`。群初始保持 `group_policy: allowlist` 且 `group_allow_from` 为空；后续群 ID 只写入 YAML，不写不存在的企业微信群环境变量。
 4. 在 `config.yaml` 把 `platforms.wecom.enabled` 改为 `true`。
-5. 前台运行 `hermes gateway`，实测一条获准私聊消息、回复和重连。不要先安装常驻服务。
+5. 本机已有用户服务时先停止它，再前台运行 `hermes gateway` 实测一条获准私聊消息、回复和重连；通过后恢复用户服务。
 
 WebSocket 模式只需出站网络，不要求公网 callback。它只收机器人可见的新消息，不读取工作会话历史。若租户没有 AI Bot 权限，再单独评估自建应用 callback；该路径要求管理员、Corp ID/Secret/Agent ID、Token/AES key 和公网 HTTPS。
 
@@ -54,11 +54,12 @@ WebSocket 模式只需出站网络，不要求公网 callback。它只收机器�
 
 ```bash
 export HERMES_HOME="${HOME}/.config/worklikerico/hermes"
-install -m 600 integrations/hermes/env.template "${HERMES_HOME}/.env"
-install -m 600 integrations/hermes/config.template.yaml "${HERMES_HOME}/config.yaml"
+cp -n integrations/hermes/env.template "${HERMES_HOME}/.env"
+cp -n integrations/hermes/config.template.yaml "${HERMES_HOME}/config.yaml"
+chmod 600 "${HERMES_HOME}/.env" "${HERMES_HOME}/config.yaml"
 ```
 
-复制后先填本地 secrets，再启用单一渠道。不要把填好的文件复制回仓库。
+这些命令保留既有文件；已有 GPT/MiMo 配置时只补充所需渠道字段。复制后先填本地 secrets，再启用单一渠道。不要把填好的文件复制回仓库。
 
 ## 官方依据
 

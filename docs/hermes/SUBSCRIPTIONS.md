@@ -20,7 +20,7 @@ HTTPS_PROXY=http://localhost:PORT
 NO_PROXY=localhost,127.0.0.1
 ```
 
-这只证明 GPT 订阅推理和隔离的合成本地文件读写可用。真实资料、社交收件、自动回复、gateway 与无人值守闭环尚未验证。
+随后原生 gateway 自动领取并完成了一次真实本地资料整理；内容经纠正复验，源输入哈希未变。现已验证订阅推理、本地文件工具与单次后台执行；社交收件、自动回复和持续日常运行尚未验收。
 
 ## MiMo（Token Plan 订阅）
 
@@ -31,6 +31,8 @@ hermes setup
 # Quick Setup → Xiaomi MiMo → 填订阅专属 Key/Base URL → mimo-v2.5-pro
 ```
 
-本机已有 MiMo Code CLI `0.1.13`，其可见配置只有 schema/plugin 键，不能证明 Token Plan 已登录。Hermes 当前也没有 MiMo 凭证或模型配置；尚未登录、未发起真实模型调用。
+本机现有 MiMoCode 订阅已接入 Hermes：先由 `mimo debug paths` 确认实际认证存储，再核对 Token Plan 凭证和官方地区入口，仅将所需字段写入 Hermes 私有 `.env`，保留既有变量与私有备份。只检查配置文件中的 schema/plugin 键不足以判断订阅状态。
+
+原生 `xiaomi` / `mimo-v2.5-pro` 单次无工具短文本请求成功，约 3.82 秒；后台服务已重启加载配置。默认仍为 `openai-codex` / `gpt-5.4-mini`，没有配置 fallback。MiMo 工具调用、后台任务和持续运行尚未验收。
 
 官方依据：[OpenAI 认证](https://developers.openai.com/codex/auth) · [MiMo × Hermes](https://mimo.mi.com/docs/zh-CN/tokenplan/integration/hermes-agent) · [Token Plan 凭证](https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/subscription) · [Hermes 固定版本 provider](https://github.com/NousResearch/hermes-agent/blob/v2026.9.7/hermes_cli/auth.py#L180-L241)
