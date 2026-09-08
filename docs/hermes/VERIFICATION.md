@@ -1,6 +1,6 @@
 # H01/H03 本地验收记录
 
-时间：2026-09-08，macOS 26.5.2 arm64。所有测试使用 `HERMES_HOME=${HOME}/.config/worklikerico/hermes`。GPT provider 已完成原生 OAuth，MiMo Token Plan 已通过原生短文本调用；消息平台仍未启用；当前已安装并运行原生用户级 gateway service；没有发送外部消息。
+时间：2026-09-08，macOS 26.5.2 arm64。所有测试使用 `HERMES_HOME=${HOME}/.config/worklikerico/hermes`。GPT provider 已完成原生 OAuth，MiMo Token Plan 已通过原生短文本调用；消息平台仍未启用；当前已安装并运行原生用户级 gateway service；初期测试没有发送外部消息；后续已按用户明确授权向指定企微联系人发送一条接入协助请求。
 
 | 检查 | 结果 | 证据与边界 |
 |---|---|---|
@@ -24,7 +24,8 @@
 | GPT 合成本地文件任务 | PASS | 私有临时目录内预加载 `work-like-rico`，约 15.63 秒正确写出 2 条未完成虚构待办；结果文件存在、内容顺序正确，输入 SHA-256 前后相同 |
 | MiMo 订阅模型调用 | PASS | 原生 `xiaomi` / `mimo-v2.5-pro` 无工具短文本约 3.82 秒成功；默认仍为 GPT，无 fallback；后台重启后由 launchd 监督运行 |
 | 原生后台本地资料任务 | PASS（纠正后） | 同一任务自动领取、执行并生成真实计划摘要；输入哈希一致，首次与第二次内容不合格，第三次内容复验通过，详见下文 |
-| Telegram/企业微信实网 | NOT RUN | 企业微信可见登录页；Telegram 未取得可用接入条件；adapter 配置仍 disabled |
+| Telegram Bot API 身份与群设置 | PASS | BotFather创建后，官方getMe确认身份；配置本人首期禁群后getMe确认can_join_groups=false；无webhook，实际收件仍待首条消息 |
+| Telegram/企业微信实网收发 | NOT RUN | 两个客户端已登录；TG尚未取得本人启动消息，企微Rico已确认API模式与长连接接入权限，单bot连接详情未取得；adapter配置仍disabled |
 
 当前保留状态：cron 无 job；gateway 由 launchd 运行；失败 probe 的 job/script 已移除；Kanban canary 已在保留快照后归档，未归档任务仅有已完成的真实本地资料任务，无待执行任务。
 
@@ -76,3 +77,12 @@ GPT 已覆盖订阅推理、本地文件读写与一次原生后台资料整理�
 - run 4：补充“建议动作必须有当前可执行的未完成事实，否则写暂无”后，同一任务复验通过。原产物与失败历史均保留。
 
 该任务的输入冻结在 MiMo 接入前，因此原产物仍将 MiMo 写为待接入；这是输入快照的边界，不是当前状态。订阅现状以本次独立调用结果和订阅说明为准。此任务证明一次本地资料任务可后台自动执行，不能推导为社交收件或长期无人值守已验收。
+
+## 2026-09-08 晚间真实渠道准备
+
+- Telegram：通过官方 BotFather 创建显示名 rico 的机器人；用户提供的凭据已通过官方 `getMe` 身份校验并写入私有配置，原变量逐值保留且有修改前备份。
+- 本人首期设置：BotFather `/setjoingroups` 实际返回 `DISABLED`，随后 `getMe` 确认 `can_join_groups=false`；隐私模式保持开启，无 webhook。
+- 本人 ID：有限 `getUpdates` 检查尚无启动消息，因此没有猜测用户 ID、没有启用渠道。真实收件、模型处理、回复仍未验收。
+- 企业微信：当前已登录，现有 Rico 为企业管理员创建的 API 模式 BOT；全局管理页允许成员使用长连接，并显示单成员可见范围。尚未将该成员等同当前登录本人；单 bot 的连接方式、Bot ID/Secret 与占用状态还需详情页核对。
+- 按用户授权向指定企微联系人发送了一条 Telegram 首次启动协助请求，发送后在会话中可见。后来请求打开 Rico 详情页的补充消息未发送，不能把草拟请求算作已送达。
+- 桌面限制：BotFather 普通聊天输入可用并完成设置；新 bot 开始按钮和企微内嵌详情链接不在可操作 AX 树中，坐标方式不受当前接口支持。有限恢复已停止，没有修改企微设置、重置 Secret 或创建重复机器人。
