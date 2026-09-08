@@ -1,0 +1,12 @@
+name: hermes-agent
+owner: NousResearch
+repository: https://github.com/NousResearch/hermes-agent.git
+license: MIT
+release: v2026.9.7
+package_version: 0.21.1
+commit: 2237be355906fbe6065ce1815711eee52b2d646e
+tag_object: 9949d0d324a3a06ac238e01dd1c2103dbca09900
+tag_signature: absent
+python: ">=3.11,<3.14"
+install_method: pinned-git-clone-and-uv-locked-sync-with-messaging-extra
+accessed_at: 2026-09-08T16:00:00+08:00

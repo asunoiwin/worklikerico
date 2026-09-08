@@ -1,0 +1,4 @@
+interface:
+  display_name: "Oracle Cloud 云主机运维"
+  short_description: "查询 Oracle Cloud 资源并安全管理实例、网络、抢机和防回收"
+  default_prompt: "Use $oci-cloud-ops to inventory my Oracle Cloud account and safely perform the requested instance operation."

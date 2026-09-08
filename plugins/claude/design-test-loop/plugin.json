@@ -1,0 +1,65 @@
+{
+  "name": "design-test-loop",
+  "version": "2.1.0",
+  "description": "完整设计-实现-测试链路硬约束。3 个 hook + 4 个 gate（design / spec / clean+doubt / release）+ 多 skill 联动。把'AI 写代码屎山 / 不自审 / 不验真实效果'三大问题用工具级拦截兜底。",
+  "author": "Rico + Claude Opus 4.7",
+  "skills": [
+    "design-gate",
+    "spec-first",
+    "doubt-review",
+    "remove-ai-slop",
+    "strict-prod-audit",
+    "devtools-verify",
+    "audit-verify",
+    "blast-radius",
+    "memory-rules",
+    "channel-onboarding"
+  ],
+  "hooks": {
+    "UserPromptSubmit": "hooks/01-detect-intent.sh",
+    "PreToolUse": "hooks/02-gate-check.sh",
+    "PostToolUse": "hooks/03-state-advance.sh"
+  },
+  "state_dir": "state",
+  "states": [
+    "INIT",
+    "DESIGN_PENDING",
+    "DESIGN_DONE",
+    "IMPL_SPEC_OK",
+    "IMPL_IN_PROGRESS",
+    "IMPL_DONE",
+    "T1_PASS",
+    "T2_PASS",
+    "AUDIT_PASS",
+    "RELEASED"
+  ],
+  "transitions": {
+    "INIT -> DESIGN_PENDING": "UserPromptSubmit 命中代码改动关键字",
+    "DESIGN_PENDING -> DESIGN_DONE": "transcript 出现影响面五元 + 同类全检三栏 + 双面影响声明",
+    "DESIGN_DONE -> IMPL_SPEC_OK": "transcript 出现 spec-first 5 段（目标 / 产出物 / 边界 / 测试标准 / 影响面）",
+    "IMPL_SPEC_OK -> IMPL_IN_PROGRESS": "首次 Edit/Write 通过",
+    "IMPL_IN_PROGRESS -> IMPL_DONE": "git commit 检测到 + transcript 含 remove-ai-slop 清理标记 + doubt-review 自审",
+    "IMPL_DONE -> T1_PASS": "一测 agent 派发（subagent_type 含 test/playwright/devtools）",
+    "T1_PASS -> T2_PASS": "独立二测 agent 派发（playwright-audit / prod / 二测）",
+    "T2_PASS -> AUDIT_PASS": "audit-verify agent 独立结论 PASS",
+    "AUDIT_PASS -> RELEASED": "update.sh / release / git tag 命令执行"
+  },
+  "gates": {
+    "Gate-1 设计门": "DESIGN_PENDING + Edit/Write → 阻塞，要求 design-gate 三件套",
+    "Gate-2 实现门": "DESIGN_DONE + Edit/Write → 阻塞，要求 spec-first 5 段",
+    "Gate-3 提交门": "IMPL_IN_PROGRESS + git commit → 阻塞，要求先 remove-ai-slop 清理本次 diff（标记放行），再 doubt-review 四段自审",
+    "Gate-4 发布门": "T1_PASS/T2_PASS + release 命令 → 阻塞，要求完成下一阶段测试 agent"
+  },
+  "bypass_env": {
+    "DTL_HOOKS_ENABLED": "0 = 完全关闭 design-test-loop hook（故障止血用）",
+    "DTL_VERBOSE": "1 = 输出 hook 提示；默认 0 静默，避免污染 Claude 工具调用上下文",
+    "DTL_GATE_LEVEL": "warn = 全部 gate 改软警告不阻塞（灰度用）",
+    "DTL_DISABLE_SPEC_GATE": "1 = 关掉 Gate-2 spec-first 检查",
+    "DTL_DISABLE_DOUBT_GATE": "1 = 关掉 Gate-3 doubt-review 检查",
+    "DTL_DISABLE_SLOP_GATE": "1 = 关掉 Gate-3 remove-ai-slop 清理检查"
+  },
+  "health_check": {
+    "command": "bash ~/.claude/plugins/design-test-loop/scripts/self-test.sh",
+    "requires_pass_before_enable": true
+  }
+}

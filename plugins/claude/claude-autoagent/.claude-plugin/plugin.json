@@ -1,0 +1,8 @@
+{
+  "name": "claude-autoagent",
+  "description": "Claude Code 多 Agent 自动编排插件 — 自动分析任务复杂度，智能路由到多 agent 协作流程，支持故障自愈和结构化交接",
+  "author": {
+    "name": "Rico",
+    "email": "rico@local"
+  }
+}

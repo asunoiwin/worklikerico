@@ -1,0 +1,5 @@
+#!/bin/sh
+
+: "${HERMES_HOME:=${HOME}/.config/worklikerico/hermes}"
+export HERMES_HOME
+exec "${HOME}/.local/share/worklikerico/hermes-venv/bin/hermes" "$@"

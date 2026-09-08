@@ -1,0 +1,39 @@
+# Hermes Agent v0.21.1 / v2026.9.7
+# Secrets belong in .env, never in this file.
+_config_version: 41
+
+model:
+  # Keep Hermes' own agent loop. Do not enable codex_app_server globally.
+  openai_runtime: auto
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  write_approval: true
+
+skills:
+  write_approval: true
+
+platforms:
+  telegram:
+    enabled: false
+    extra:
+      allow_from: []
+      group_allow_from: []
+      group_allowed_chats: []
+      require_mention: true
+      observe_unmentioned_group_messages: false
+      guest_mode: false
+  wecom:
+    enabled: false
+    extra:
+      dm_policy: allowlist
+      group_policy: allowlist
+      allow_from: []
+      group_allow_from: []
+      groups: {}
+
+kanban:
+  dispatch_in_gateway: true
+  # Keep review human-controlled until a distinct reviewer profile is configured.
+  review_dispatch: false

@@ -1,0 +1,4 @@
+interface:
+  display_name: "中转与节点运维"
+  short_description: "安全搭建 Linux 中转、V2Ray 或 Shadowsocks 节点"
+  default_prompt: "Use $relay-node-ops to inspect this Linux server, preserve existing services and firewall intent, deploy one requested relay or node role, and verify only the acceptance scope authorized by the user."

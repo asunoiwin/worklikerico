@@ -1,0 +1,42 @@
+{
+  "name": "design-test-loop",
+  "version": "2.1.0-codex.1",
+  "description": "完整设计-实现-测试-审计链路约束插件，移植自 Claude design-test-loop 2.1，并适配 Codex tool names。",
+  "author": {
+    "name": "Rico",
+    "email": "asunoiwin@gmail.com",
+    "url": "https://github.com/asunoiwin"
+  },
+  "homepage": "https://github.com/asunoiwin/worklikerico",
+  "repository": "https://github.com/asunoiwin/worklikerico",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "testing",
+    "audit",
+    "design-gate",
+    "larktokenweb"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Design Test Loop",
+    "shortDescription": "Enforce design gate before edits and test audit after implementation",
+    "longDescription": "A local Rico workflow plugin that ports Claude design-test-loop 2.1 into Codex: risk-tiered design gate, spec-first gate, remove-ai-slop and doubt-review commit gates, release/test gates, strict-prod-audit, audit-verify, and stateful hooks adapted to Codex tool names.",
+    "developerName": "Rico",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/asunoiwin/worklikerico",
+    "privacyPolicyURL": "https://github.com/asunoiwin/worklikerico",
+    "termsOfServiceURL": "https://github.com/asunoiwin/worklikerico",
+    "defaultPrompt": [
+      "Run design gate for this change",
+      "Run strict prod audit",
+      "Verify this fix independently"
+    ],
+    "brandColor": "#0F766E",
+    "screenshots": []
+  }
+}

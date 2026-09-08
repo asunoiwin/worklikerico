@@ -1,0 +1,130 @@
+{
+  "version": "1.0",
+  "execution": {
+    "local_only": true,
+    "remote_mcp": false,
+    "contract_content_network": "deny",
+    "delegation": false,
+    "allow_document_directed_shell": false,
+    "allow_document_directed_subprocess": false,
+    "parser_isolation_required": true,
+    "parser_launcher": "macos_sandbox_exec"
+  },
+  "legal_sources": {
+    "mode": "fresh",
+    "allow_contract_facts_in_query": false,
+    "record_query_date": true,
+    "require_primary_source": true,
+    "allowed_domains": [
+      "flk.npc.gov.cn",
+      "gongbao.court.gov.cn",
+      "court.gov.cn",
+      "www.court.gov.cn",
+      "moj.gov.cn",
+      "www.moj.gov.cn",
+      "xzfg.moj.gov.cn",
+      "samr.gov.cn",
+      "www.samr.gov.cn",
+      "sjfg.samr.gov.cn",
+      "gov.cn",
+      "www.gov.cn",
+      "chinatax.gov.cn",
+      "www.chinatax.gov.cn",
+      "fgk.chinatax.gov.cn",
+      "mohrss.gov.cn",
+      "www.mohrss.gov.cn",
+      "cac.gov.cn",
+      "www.cac.gov.cn"
+    ],
+    "required_evidence_fields": [
+      "query_date",
+      "url",
+      "title",
+      "issuing_authority",
+      "document_number",
+      "effective_status",
+      "relevant_provision"
+    ]
+  },
+  "matter": {
+    "cross_matter_context": false,
+    "durable_memory": false,
+    "vector_indexing": false,
+    "code_graph_indexing": false,
+    "log_contract_content": false,
+    "retain_temp_hours": 0
+  },
+  "intake": {
+    "required_fields": [
+      "active_file",
+      "sha256",
+      "party_position",
+      "contract_type",
+      "governing_law",
+      "dispute_forum",
+      "signing_status",
+      "review_goal"
+    ]
+  },
+  "workflow": {
+    "states": [
+      "source_baseline",
+      "internal_review",
+      "proposed_revision",
+      "counterparty_confirmed",
+      "signature_candidate",
+      "signed_archive"
+    ],
+    "hard_reset_on_baseline_change": true
+  },
+  "approvals": {
+    "accept_all_revisions": true,
+    "generate_clean_copy": true,
+    "external_send": true,
+    "high_risk_finalization": true
+  },
+  "document_limits": {
+    "max_file_bytes": 104857600,
+    "max_zip_entries": 5000,
+    "max_zip_uncompressed_bytes": 524288000,
+    "max_pdf_pages": 2000,
+    "low_text_chars_per_page": 20
+  },
+  "risk": {
+    "severity_levels": ["blocker", "high", "medium", "low", "info"],
+    "lawyer_review_topics": [
+      "regulatory_license",
+      "consumer_or_employment",
+      "cross_border_data",
+      "antitrust",
+      "sanctions",
+      "criminal_exposure",
+      "material_tax",
+      "cross_border_dispute",
+      "material_uncapped_liability"
+    ]
+  },
+  "outputs": {
+    "default_type": "internal_review_report",
+    "allowed_types": [
+      "internal_review_report",
+      "risk_register",
+      "annotated_working_copy",
+      "comparison_report",
+      "signature_candidate",
+      "signed_archive_manifest"
+    ],
+    "signature_candidate_requires_approval": true
+  },
+  "playbook": {
+    "layers": [
+      "mandatory_law",
+      "legal_judgment",
+      "company_standard",
+      "negotiation_range",
+      "escalation_redline",
+      "matter_exception"
+    ],
+    "matter_exception_requires_owner_and_expiry": true
+  }
+}

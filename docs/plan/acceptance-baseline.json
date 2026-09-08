@@ -1,0 +1,115 @@
+{
+  "version": "draft-0.1",
+  "status": "baseline-before-implementation",
+  "scope": "原始需求的可验证验收条件；技术选型待调查冻结",
+  "cases": [
+    {
+      "id": "source-scope",
+      "name": "只处理获准来源",
+      "expectation": "未列入允许范围的来源不能创建可执行任务",
+      "status": "not_run"
+    },
+    {
+      "id": "message-idempotency",
+      "name": "重复消息不重复执行",
+      "expectation": "同一来源与消息标识最多一条任务，恢复不重放已完成副作用",
+      "status": "not_run"
+    },
+    {
+      "id": "untrusted-content",
+      "name": "消息不是授权",
+      "expectation": "普通收件内容要求提权/发消息不能改变执行权限",
+      "status": "not_run"
+    },
+    {
+      "id": "concrete-contract",
+      "name": "先有交付约定",
+      "expectation": "任务必须有具体目标、工作目录/范围、验收检查与证据要求",
+      "status": "not_run"
+    },
+    {
+      "id": "real-artifact",
+      "name": "以实际产物验收",
+      "expectation": "指定产物存在且内容满足用户要求，不能仅检查日志文案或退出码",
+      "status": "not_run"
+    },
+    {
+      "id": "evidence-freshness",
+      "name": "证据与当前版本匹配",
+      "expectation": "旧运行/修改前证据不能验收新状态",
+      "status": "not_run"
+    },
+    {
+      "id": "independent-review",
+      "name": "实现不自证",
+      "expectation": "高风险或有用户可见行为的变更有不同执行者复核及原始需求依据",
+      "status": "not_run"
+    },
+    {
+      "id": "bounded-retry",
+      "name": "失败恢复有界",
+      "expectation": "故障有明确次数/时间限制，超过后报告具体阻塞",
+      "status": "not_run"
+    },
+    {
+      "id": "lease-recovery",
+      "name": "退出不永久运行",
+      "expectation": "执行者失联后可识别并恢复，旧执行者返回不覆盖新状态",
+      "status": "not_run"
+    },
+    {
+      "id": "quiet-nochange",
+      "name": "无变化保持安静",
+      "expectation": "同一阻塞和相同结果不重复提醒",
+      "status": "not_run"
+    },
+    {
+      "id": "pause-cancel",
+      "name": "暂停取消有效",
+      "expectation": "取消后不再开始执行且旧结果不能复活任务",
+      "status": "not_run"
+    },
+    {
+      "id": "cost-bound",
+      "name": "空轮询不耗模型额度",
+      "expectation": "无任务时可用确定性检查；每次唤醒有单次/批量上限",
+      "status": "not_run"
+    },
+    {
+      "id": "private-data",
+      "name": "运行数据不进公开仓库",
+      "expectation": "聊天、私人任务、记忆库、凭据和原始日志在发布清单外",
+      "status": "not_run"
+    },
+    {
+      "id": "install-repeat",
+      "name": "安装可重复可恢复",
+      "expectation": "临时目录首次安装正常、再次安装不漂移、原配置可恢复",
+      "status": "not_run"
+    },
+    {
+      "id": "asset-coverage",
+      "name": "所有自建资产可追溯",
+      "expectation": "清单中每项有归并路径或明确未归并原因，第三方保留来源",
+      "status": "not_run"
+    },
+    {
+      "id": "telegram-live",
+      "name": "Telegram真实接收",
+      "expectation": "从已明确范围的实际会话接收并追踪到任务，模拟不算实网通过",
+      "status": "not_run"
+    },
+    {
+      "id": "wecom-live",
+      "name": "企业微信真实接收",
+      "expectation": "已授权官方模式真实接收一条消息，未登录不能算已读历史",
+      "status": "not_run"
+    },
+    {
+      "id": "daily-work-live",
+      "name": "本地实际工作闭环",
+      "expectation": "一项用户工作经过入箱、执行、产物验证和结果交付",
+      "status": "not_run"
+    }
+  ]
+}

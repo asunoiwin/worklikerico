@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/china-contract-review/config.schema.json",
+  "title": "China Contract Review Skill Configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "execution", "legal_sources", "matter", "intake", "workflow", "approvals", "document_limits", "risk", "outputs", "playbook"],
+  "properties": {
+    "version": {"const": "1.0"},
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["local_only", "remote_mcp", "contract_content_network", "delegation", "allow_document_directed_shell", "allow_document_directed_subprocess", "parser_isolation_required", "parser_launcher"],
+      "properties": {
+        "local_only": {"const": true},
+        "remote_mcp": {"const": false},
+        "contract_content_network": {"const": "deny"},
+        "delegation": {"const": false},
+        "allow_document_directed_shell": {"const": false},
+        "allow_document_directed_subprocess": {"const": false},
+        "parser_isolation_required": {"const": true},
+        "parser_launcher": {"const": "macos_sandbox_exec"}
+      }
+    },
+    "legal_sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "allow_contract_facts_in_query", "record_query_date", "require_primary_source", "allowed_domains", "required_evidence_fields"],
+      "properties": {
+        "mode": {"const": "fresh"},
+        "allow_contract_facts_in_query": {"const": false},
+        "record_query_date": {"const": true},
+        "require_primary_source": {"const": true},
+        "allowed_domains": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "required_evidence_fields": {"type": "array", "minItems": 7, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "matter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cross_matter_context", "durable_memory", "vector_indexing", "code_graph_indexing", "log_contract_content", "retain_temp_hours"],
+      "properties": {
+        "cross_matter_context": {"const": false},
+        "durable_memory": {"const": false},
+        "vector_indexing": {"const": false},
+        "code_graph_indexing": {"const": false},
+        "log_contract_content": {"const": false},
+        "retain_temp_hours": {"const": 0}
+      }
+    },
+    "intake": {"$ref": "#/$defs/stringListObject"},
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["states", "hard_reset_on_baseline_change"],
+      "properties": {
+        "states": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"type": "string"}},
+        "hard_reset_on_baseline_change": {"const": true}
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accept_all_revisions", "generate_clean_copy", "external_send", "high_risk_finalization"],
+      "properties": {
+        "accept_all_revisions": {"const": true},
+        "generate_clean_copy": {"const": true},
+        "external_send": {"const": true},
+        "high_risk_finalization": {"const": true}
+      }
+    },
+    "document_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_file_bytes", "max_zip_entries", "max_zip_uncompressed_bytes", "max_pdf_pages", "low_text_chars_per_page"],
+      "properties": {
+        "max_file_bytes": {"type": "integer", "minimum": 1, "maximum": 104857600},
+        "max_zip_entries": {"type": "integer", "minimum": 1, "maximum": 5000},
+        "max_zip_uncompressed_bytes": {"type": "integer", "minimum": 1, "maximum": 524288000},
+        "max_pdf_pages": {"type": "integer", "minimum": 1, "maximum": 2000},
+        "low_text_chars_per_page": {"type": "integer", "minimum": 20}
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["severity_levels", "lawyer_review_topics"],
+      "properties": {
+        "severity_levels": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string"}},
+        "lawyer_review_topics": {
+          "type": "array",
+          "minItems": 9,
+          "uniqueItems": true,
+          "items": {"type": "string"},
+          "allOf": [
+            {"contains": {"const": "regulatory_license"}},
+            {"contains": {"const": "consumer_or_employment"}},
+            {"contains": {"const": "cross_border_data"}},
+            {"contains": {"const": "antitrust"}},
+            {"contains": {"const": "sanctions"}},
+            {"contains": {"const": "criminal_exposure"}},
+            {"contains": {"const": "material_tax"}},
+            {"contains": {"const": "cross_border_dispute"}},
+            {"contains": {"const": "material_uncapped_liability"}}
+          ]
+        }
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default_type", "allowed_types", "signature_candidate_requires_approval"],
+      "properties": {
+        "default_type": {"const": "internal_review_report"},
+        "allowed_types": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["internal_review_report", "risk_register", "annotated_working_copy", "comparison_report", "signature_candidate", "signed_archive_manifest"]}},
+        "signature_candidate_requires_approval": {"const": true}
+      }
+    },
+    "playbook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layers", "matter_exception_requires_owner_and_expiry"],
+      "properties": {
+        "layers": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"type": "string"}},
+        "matter_exception_requires_owner_and_expiry": {"const": true}
+      }
+    }
+  },
+  "$defs": {
+    "stringListObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_fields"],
+      "properties": {"required_fields": {"type": "array", "minItems": 8, "uniqueItems": true, "items": {"type": "string"}}}
+    }
+  }
+}

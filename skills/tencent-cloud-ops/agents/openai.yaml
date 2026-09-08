@@ -1,0 +1,4 @@
+interface:
+  display_name: "腾讯云安全运维"
+  short_description: "Operate Tencent Cloud compute and network APIs safely"
+  default_prompt: "Use $tencent-cloud-ops and current official API documentation to discover and safely operate Tencent Cloud compute and network resources."

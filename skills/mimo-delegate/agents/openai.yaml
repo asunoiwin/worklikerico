@@ -1,0 +1,4 @@
+interface:
+  display_name: "Delegate to MiMo"
+  short_description: "Safely delegate bounded work to local MiMoCode"
+  default_prompt: "Use $mimo-delegate to run this task with MiMoCode and return a structured handoff."

@@ -1,0 +1,37 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/01-route-intent.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "wait_agent|multi_agent_v1.wait_agent|claude_result|mcp__claude-delegate__claude_result|claude_tail|mcp__claude-delegate__claude_tail",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/02-result-guard.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./hooks/03-subagent-stop.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/asunoiwin/worklikerico",
+  "plugins": [
+    {
+      "family": "memory-pro",
+      "platform": "claude",
+      "name": "claude-memory-pro",
+      "path": "plugins/claude/claude-memory-pro",
+      "license": "MIT",
+      "build": "npm ci --legacy-peer-deps && npm run build"
+    },
+    {
+      "family": "memory-pro",
+      "platform": "codex",
+      "name": "codex-memory-pro",
+      "path": "plugins/codex/codex-memory-pro",
+      "license": "MIT",
+      "build": "npm ci --legacy-peer-deps && npm run build"
+    },
+    {
+      "family": "multi-agent",
+      "platform": "claude",
+      "name": "claude-autoagent",
+      "path": "plugins/claude/claude-autoagent",
+      "license": "MIT",
+      "build": null
+    },
+    {
+      "family": "multi-agent",
+      "platform": "codex",
+      "name": "codex-multi-agent",
+      "path": "plugins/codex/codex-multi-agent",
+      "license": "MIT",
+      "build": null
+    },
+    {
+      "family": "design-test-loop",
+      "platform": "claude",
+      "name": "design-test-loop",
+      "path": "plugins/claude/design-test-loop",
+      "license": "MIT",
+      "build": null
+    },
+    {
+      "family": "design-test-loop",
+      "platform": "codex",
+      "name": "design-test-loop",
+      "path": "plugins/codex/design-test-loop",
+      "license": "MIT",
+      "build": null
+    }
+  ],
+  "skills": [
+    {
+      "name": "work-like-rico",
+      "path": "skill/work-like-rico",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "repository-core"
+    },
+    {
+      "name": "oci-cloud-ops",
+      "path": "skills/oci-cloud-ops",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "relay-node-ops",
+      "path": "skills/relay-node-ops",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "linux-guard",
+      "path": "skills/linux-guard",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "tencent-cloud-ops",
+      "path": "skills/tencent-cloud-ops",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "proxmox-ve-ops",
+      "path": "skills/proxmox-ve-ops",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "tikhub-api-helper",
+      "path": "skills/tikhub-api-helper",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "china-contract-review",
+      "path": "skills/china-contract-review",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "mimo-delegate",
+      "path": "skills/mimo-delegate",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "xmind",
+      "path": "skills/xmind",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "upstream-test",
+      "path": "skills/upstream-test",
+      "installTargets": [
+        "agents",
+        "claude",
+        "codex"
+      ],
+      "classification": "self-built"
+    },
+    {
+      "name": "blast-radius",
+      "path": "skills/blast-radius",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    },
+    {
+      "name": "channel-onboarding",
+      "path": "skills/channel-onboarding",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    },
+    {
+      "name": "devtools-verify",
+      "path": "skills/devtools-verify",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    },
+    {
+      "name": "doubt-review",
+      "path": "skills/doubt-review",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    },
+    {
+      "name": "lint-baseline",
+      "path": "skills/lint-baseline",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    },
+    {
+      "name": "memory-rules",
+      "path": "skills/memory-rules",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    },
+    {
+      "name": "remove-ai-slop",
+      "path": "skills/remove-ai-slop",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    },
+    {
+      "name": "spec-first",
+      "path": "skills/spec-first",
+      "installTargets": [
+        "claude"
+      ],
+      "classification": "claude-workflow-candidate"
+    }
+  ],
+  "exclusions": [
+    {
+      "kind": "runtime-state",
+      "examples": [
+        "memory databases",
+        "task databases",
+        "hook state",
+        "baselines",
+        "backups"
+      ],
+      "reason": "private mutable data"
+    },
+    {
+      "kind": "generated",
+      "examples": [
+        "node_modules",
+        "dist",
+        "build logs",
+        "reports"
+      ],
+      "reason": "rebuild during isolated installation"
+    },
+    {
+      "kind": "third-party",
+      "examples": [
+        "system skills",
+        "curated plugins",
+        "vendor caches"
+      ],
+      "reason": "dependency only; keep upstream ownership"
+    }
+  ]
+}

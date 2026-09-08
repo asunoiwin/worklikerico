@@ -1,272 +1,106 @@
-# Work Like Rico
+# WorkLikeRico
 
-一个面向 Claude Code、OpenAI Codex 和 Cursor 的通用 Agent Skill，用一套项目无关的工作协议，让 AI Agent 以“事实优先、授权内自主、根因修复、最小充分、真实闭环、压缩汇报”的方式推进任务。
+一个仓库维护 Rico 自建的技能、记忆与协作插件；一个本地 Hermes 助手接收信息、执行任务、跟进结果。简单工作直接完成，重要工作用真实结果验收。
 
-它不是某个代码库的规则集合，也不模拟个人口头语。它提炼的是一套可迁移的判断顺序：先确认真实发生了什么，再承担授权范围内的执行责任，在正确层级解决根因，并用与承诺匹配的证据证明完成。
+Hermes 原生负责模型、消息入口、定时任务和看板。本仓库提供现有能力包与工作规则，不另建调度器、任务数据库、代理服务或控制台。
 
-## 为什么需要这个 Skill
+## 当前交付
 
-通用 Agent 经常出现几类问题：
+- 已归并 6 个平台插件包和 19 项技能目录，包含腾讯云、OCI、PVE、记忆、多 agent 和验收工作流。
+- 工作协议已加强源文件保留、当前事实核对、授权内推进、取消停止与安静跟进；三类合成任务通过独立真实模型验收。
+- 本地 Hermes 0.21.1 已安装，原生无模型定时任务、暂停恢复和持久化已实测。
+- GPT 订阅已登录并通过真实回复与本地文件任务验证；MiMo 有原生订阅入口，待填入凭证。真实消息渠道尚未接通，自动处理日常工作的整条链路仍待验收。
 
-- 把旧文档、任务状态或上一位 Agent 的总结当作当前事实。
-- 遇到普通工程取舍时反复请示，把执行判断转回用户。
-- 在报错位置打补丁，没有定位产生问题的真正层级。
-- 用“最小改动”缩小已经确认的目标，或顺手扩大成无关重构。
-- 把单元测试、脚本绿灯、代码存在或自报 PASS 当作最终验收。
-- 不知道何时应直接做、委派、开会、发起对抗或独立复核，导致协作不足或流程过载。
-- 将长日志、原始事件流和无决策价值的过程灌回主对话。
+落地顺序见[任务书](docs/plan/implementation-plan.md)，逐项边界见[实施状态](docs/plan/status.md)。
 
-`work-like-rico` 将这些问题收敛成一套明确、风险自适应的执行协议。
-
-## 它能做什么
-
-### 核对当前真相
-
-接手遗留任务、审计完成结论或继续中断工作时，先检查最接近现实的代码、运行状态、测试和产物，并明确区分：
-
-- 已证实
-- 推断
-- 未知
-- 当前状态
-- 目标状态
-
-### 定位正确层级的根因
-
-遇到 bug、新需求或用户反馈时，从四个层级判断问题：
-
-1. 设计与职责
-2. 状态流转
-3. 数据与约束
-4. 边界与异常路径
-
-随后检查由同一根因影响的同类模式和配对操作，避免只修最先暴露的样本。
-
-### 在授权范围内自主闭环
-
-对安全、可逆、不会改变目标的内部选择，Agent 应自行排序、实施、处理失败并复验，不把“先看哪个文件”“是否继续排查”“要不要跑测试”等执行责任反复推回用户。
-
-涉及生产、真实数据、付费、安全、凭据、外部沟通、不可逆操作或目标冲突时，才暂停对应边界并请求明确授权。
-
-### 控制复杂度和修改范围
-
-只做实现目标和消除根因所需的工作：
-
-- 不预埋假想需求。
-- 不顺手重构无关内容。
-- 不复制已有能力。
-- 不把局部修复无限扩大。
-- 不用“最小改动”偷换已经批准的完整目标。
-
-### 用真实证据验收
-
-验证方式必须匹配承诺层级：
-
-- 静态结论使用静态证据。
-- 代码行为使用测试。
-- 集成承诺使用端到端链路。
-- 用户体验使用用户真正接触的界面或产物。
-- 高风险或自证不足时增加独立复核。
-
-### 压缩上下文和汇报
-
-最终按照下面的顺序汇报：
-
-```text
-已成事实
-→ 最小必要证据
-→ 剩余风险或真实阻断
-→ 必要的下一步
-```
-
-大文件、长日志、批量检索和视觉交互可以下沉给独立工作单元，但主控仍负责整合证据和最终判定。
-
-### 选择正确的协作模式
-
-Skill 不把多 Agent、会议或审查当作默认动作，而是根据缺少的东西选择协作形式：
-
-| 当前缺口 | 使用方式 |
-| --- | --- |
-| 没有缺口，目标清晰且低风险 | 单一 owner 直接执行 |
-| 缺少并行取证或需要压缩大量过程信息 | 委派 |
-| 缺少跨角色的约束收敛与决定 | 决策会议 |
-| 缺少对关键假设、方案或证据的主动证伪 | 对抗审查 |
-| 缺少与实现者独立的完成证据 | 独立复核 |
-| 缺少用户真正接触结果的证明 | 真实验收 |
-
-决策会议只在多方硬约束冲突、接口需要冻结、一个决定影响多个下游或同一争议反复出现时召开。会议必须产出决定、保留异议、owner、接口、验收标准和下一步；普通进度同步继续异步完成。
-
-对抗审查用于高风险、自证 PASS、关键假设未经挑战、证据单一、争议未决或反复返工的场景。挑战者基于原始需求和当前产物寻找反例、绕过路径、传播遗漏与证据缺口，不预设答案，也不把对抗变成人身争胜。
-
-## 七条底层原则
-
-| 原则 | 核心问题 |
-| --- | --- |
-| 现实原则 | 去掉状态标签和完成声明后，证据还能证明结论吗？ |
-| 责任原则 | 这是改变目标的决定，还是授权范围内的安全执行选择？ |
-| 因果原则 | 方案消除了产生路径，还是只让触发样本暂时不报错？ |
-| 比例原则 | 删除这一步是否会损害目标、根因闭环或验证可信度？ |
-| 闭环原则 | 证据是否直接观察了用户被承诺的结果？ |
-| 注意力原则 | 这段信息是否会改变判断或下一步？ |
-| 协作原则 | 新角色能否带来新的约束、反证或独立证据？ |
-
-## 适用场景
-
-- 接手上一位 Agent 或长线程留下的工作。
-- 调查 bug、性能退化、偶发失败或用户反馈。
-- 审计“已经完成”“已经 ready”之类的结论。
-- 推进较大改造，同时避免范围漂移。
-- 在明确授权下自主完成多阶段任务。
-- 做真实用户路径、安装产物或端到端验收。
-- 从大量历史、日志或报告中提炼结论。
-- 决定什么时候直接执行、委派、开决策会议、发起对抗或安排独立复核。
-- 用户明确要求“按 Rico 的方式”“自主闭环”或“先查根因”。
-
-## 不适用场景
-
-下面这些低风险任务默认不应触发重型工作流：
-
-- 简单事实问答
-- 翻译
-- 一句话改写
-- 机械格式转换
-- 普通闲聊
-
-即使 Skill 被显式调用，也应根据任务风险删减不必要的流程。
-
-## 支持的 Agent
-
-本项目采用通用 `SKILL.md` 结构，核心内容仅使用 `name`、`description` 和 Markdown：
-
-- Claude Code
-- OpenAI Codex
-- Cursor
-
-平台专属元数据放在可忽略的适配目录中，不进入核心行为规则。
-
-## 安装
-
-### 1. 克隆仓库
+## 安装与使用
 
 ```bash
-git clone https://github.com/asunoiwin/work-like-rico.git ~/.local/share/work-like-rico
+git clone https://github.com/asunoiwin/worklikerico.git ~/.local/share/worklikerico
+cd ~/.local/share/worklikerico
 ```
 
-### 2. 安装到需要的平台
-
-如果目标位置已经存在同名文件或目录，请先自行备份，不要直接覆盖。
-
-通用 Agent Skills：
+按使用的平台选择安装，不需要全部安装：
 
 ```bash
-mkdir -p ~/.agents/skills
-ln -s ~/.local/share/work-like-rico/skill/work-like-rico ~/.agents/skills/work-like-rico
+# 通用技能，链接到当前仓库
+python3 scripts/install_skills.py
+
+# Codex 的三个插件
+python3 scripts/install_codex_plugins.py
+
+# Claude 的三个插件
+python3 scripts/install_claude_plugins.py
 ```
 
-Claude Code：
+安装器保留同名冲突，重复执行不会创建副本。加 `--remove` 只移除本仓库受管入口；加 `--home /path/to/temp-home` 可隔离试装。Memory MCP 在安装位置构建，私人数据库和凭据留在用户目录。Claude 安装器已验证本地文件与构建流程，尚未通过真实 Claude CLI 的市场发现验证。详见[迁移说明](docs/migration/README.md)。
+
+更新源码使用 `git pull`；插件复制到缓存后，需要重新执行对应安装器更新。核心协议可显式调用：
+
+```text
+$work-like-rico 接手这个任务，先核对当前事实，再在授权范围内完成并检查结果。
+```
+
+## 本地助手
+
+按[Hermes 安装说明](docs/hermes/INSTALL.md)配置入口，然后选择一种已有订阅：
+
+| 订阅 | 原生接入 |
+|---|---|
+| GPT / ChatGPT | `hermes auth add openai-codex`，完成官方设备授权 |
+| MiMo Token Plan | `hermes setup` 选择 Xiaomi MiMo，填写订阅密钥和对应地区 Base URL |
+
+详细操作见[订阅接入](docs/hermes/SUBSCRIPTIONS.md)。不要把 Codex 已登录理解成 Hermes 已登录。
+
+Telegram 与企业微信按[渠道说明](docs/hermes/CHANNELS.md)设置。Telegram Bot 只收到机器人可见信息，企业微信机器人或应用也不自动拥有个人聊天历史。个人历史导入和企业会话存档需要对应的账号能力与权限。
+
+第一件工作按下面的链路验收：
+
+```mermaid
+flowchart LR
+    A[获准的信息或本地资料] --> B[Hermes 明确任务]
+    B --> C[调用现有技能执行]
+    C --> D[检查实际结果]
+    D --> E[交付或记录具体阻塞]
+```
+
+先跑通实际任务，再启用相应的定时跟进。[定时任务](docs/hermes/CRON.md)和[实测记录](docs/hermes/VERIFICATION.md)分别说明运行方式与已验证范围。
+
+## 按 Rico 的要求做事
+
+1. **核对事实。** 旧总结、看板状态和别人的完成声明是线索；最终检查当前文件、服务或业务结果。
+2. **授权内自主推进。** 普通内部取舍直接处理，遇到问题先诊断、有限重试或恢复；只有真正缺权限、凭据或关键决定时才交回用户。
+3. **修根因。** 判断问题属于设计、状态流转、数据结构还是边界条件，检查同类位置和配对操作。
+4. **简单优先。** 不预埋假想需求，不顺手重构，不为了流程增加会议或 agent。普通任务由一个执行者完成和检查。
+5. **真实验收。** 源文件和手工修改要保留；检查实际产物。高影响且证据不足时增加独立复核，不把脚本退出码、看板 done 或自报 PASS 当作最终结果。
+6. **有事再提醒。** 只在实质变化、完成、失败或需要决定时反馈；无变化保持安静，取消后停止推进。
+
+完整协议位于 [SKILL.md](skill/work-like-rico/SKILL.md)，具体督促约定位于[任务跟进规则](skill/work-like-rico/references/task-supervision-contract.md)。它们是行为指导，不能代替运行环境权限控制。
+
+## 目录
+
+| 目录 | 内容 |
+|---|---|
+| `skill/work-like-rico/` | 核心工作协议，保留原路径兼容既有安装 |
+| `skills/` | 独立技能与历史工作流 |
+| `plugins/claude/`、`plugins/codex/` | 保留各平台 manifest 名称的插件 |
+| `catalog/` | 自建资产清单与第三方依赖 |
+| `integrations/hermes/` | 固定版本、配置模板与检查脚本 |
+| `scripts/` | 安装、卸载和发布集合检查 |
+| `docs/` | 任务书、操作说明、迁移来源与验证记录 |
+
+## 维护与数据
+
+GitHub 只维护源码、脱敏规则与样例。聊天原文、偏好证据、私人任务、运行数据库、授权文件和密钥留在本机；消息内容本身不会扩大执行授权。
+
+发布前运行：
 
 ```bash
-mkdir -p ~/.claude/skills
-ln -s ~/.local/share/work-like-rico/skill/work-like-rico ~/.claude/skills/work-like-rico
+python3 scripts/verify_publication.py
+python3 scripts/verify_plugins.py --skip-codex-cli
+git diff --check
 ```
 
-OpenAI Codex：
+若需实际验证 Codex 市场发现，运行 `python3 scripts/verify_plugins.py --home /path/to/temp-home`。
 
-```bash
-mkdir -p ~/.codex/skills
-ln -s ~/.local/share/work-like-rico/skill/work-like-rico ~/.codex/skills/work-like-rico
-```
-
-Cursor：
-
-```bash
-mkdir -p ~/.cursor/skills
-ln -s ~/.local/share/work-like-rico/skill/work-like-rico ~/.cursor/skills/work-like-rico
-```
-
-更新时只需在克隆目录执行：
-
-```bash
-git pull
-```
-
-## 使用
-
-显式调用最可靠：
-
-```text
-Codex：$work-like-rico
-Claude Code：/work-like-rico
-Cursor：/work-like-rico
-```
-
-示例：
-
-```text
-$work-like-rico 接手这个未完成任务，先核对当前事实，再在授权范围内自主闭环。
-```
-
-```text
-/work-like-rico 这个操作偶尔失败。先判断根因属于哪一层，再修复并检查同类位置。
-```
-
-```text
-/work-like-rico 审计“已经完成”的结论，只接受与用户真实结果匹配的证据。
-```
-
-```text
-/work-like-rico 多方约束冲突时判断是否需要开会；如果开会，明确决策题和退出产物。
-```
-
-```text
-/work-like-rico 对这个高风险 PASS 结论发起独立对抗，优先寻找反例和证据缺口。
-```
-
-各平台也可以根据 `description` 自动调用该 Skill，但自动选择由模型判断，不能视为确定性保证。
-
-## 项目结构
-
-```text
-work-like-rico/
-├── README.md
-├── LICENSE
-└── skill/
-    └── work-like-rico/
-        ├── SKILL.md
-        ├── agents/
-        │   └── openai.yaml
-        └── references/
-            ├── operating-model.md
-            ├── decision-boundaries.md
-            ├── collaboration-strategies.md
-            └── examples.md
-```
-
-## 设计边界
-
-### 它不是项目规则
-
-Skill 不包含仓库路径、业务角色、分支约定、阶段编号、特定模型或项目专属验收流程。项目自己的规则仍应放在相应的 `AGENTS.md`、`CLAUDE.md`、Cursor Rules 或项目级 Skill 中。
-
-### 它不是安全沙箱
-
-Skill 是行为指导，不是程序级强制机制。对于必须绝对阻止的生产写入、危险 Git 命令、敏感文件访问或外部操作，应同时配置权限、Hooks、沙箱或审批策略。
-
-### 它不是“流程越多越好”
-
-低风险任务应直接处理，高风险任务才增加门禁、回滚准备和独立复核。严格的对象是关键不变量，而不是仪式数量。
-
-会议和对抗同样服从比例原则：能异步解决的状态不组织会议，不能产生新反证的角色不加入对抗。
-
-## 贡献
-
-欢迎提交 Issue 或 Pull Request。建议改动遵守以下原则：
-
-- 保持项目无关，不引入真实业务规则。
-- 为新增规则提供跨场景理由或反例。
-- 优先压缩现有内容，不无节制增加上下文。
-- 同时检查低风险任务是否被过度流程化。
-- 同时检查高风险任务是否仍守住授权和验证边界。
-
-## License
-
-本项目采用 [MIT License](LICENSE)。
+已发现的 hook 修复及 Memory 间接依赖问题见[已知问题](docs/migration/known-issues.md)。来源与保留决策见[迁移说明](docs/migration/README.md)。根许可证为 [MIT](LICENSE)，各包的许可证边界见[许可证说明](docs/migration/licenses.md)。

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Proxmox VE Operations"
+  short_description: "Safely inspect and operate Proxmox VE hosts and guests"
+  default_prompt: "Use $proxmox-ve-ops to inspect this Proxmox VE environment and propose the safest verified action."

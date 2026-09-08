@@ -1,0 +1,4 @@
+interface:
+  display_name: "TikHub API 助手"
+  short_description: "按需查询并安全调用 TikHub 常用接口"
+  default_prompt: "使用 $tikhub-api-helper 查询并调用一个 TikHub 接口。"

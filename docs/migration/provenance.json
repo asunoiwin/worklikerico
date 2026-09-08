@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-08",
+  "sources": [
+    {
+      "asset": "repository-core",
+      "sourceRepository": "asunoiwin/work-like-rico",
+      "visibility": "public",
+      "ref": "main@898074fcdc88",
+      "workingTree": "clean at discovery",
+      "destination": [
+        "skill/work-like-rico"
+      ]
+    },
+    {
+      "asset": "memory-pro-combined",
+      "sourceRepository": "asunoiwin/memory-pro",
+      "visibility": "public",
+      "ref": "main@c2d5565c85ff",
+      "workingTree": "15 local changes; selected working tree copied after secret redaction",
+      "destination": [
+        "plugins/claude/claude-memory-pro",
+        "plugins/codex/codex-memory-pro"
+      ]
+    },
+    {
+      "asset": "codex-memory-private-donor",
+      "sourceRepository": "asunoiwin/codex-memory-pro",
+      "visibility": "private",
+      "ref": "main@ffd807155bf8",
+      "workingTree": "5 local log-namespace changes",
+      "destination": [
+        "docs/migration/memory-dirty-mapping.md"
+      ]
+    },
+    {
+      "asset": "claude-memory-history",
+      "sourceRepository": "asunoiwin/claude-memory-pro",
+      "visibility": "public",
+      "ref": "feature/initial-release@79419e26bf8c",
+      "workingTree": "one local sync-script change; combined repository selected",
+      "destination": [
+        "plugins/claude/claude-memory-pro"
+      ]
+    },
+    {
+      "asset": "multi-agent-combined",
+      "sourceRepository": "asunoiwin/multi-agent",
+      "visibility": "public",
+      "ref": "main@82439ac46ab7",
+      "workingTree": "clean",
+      "destination": [
+        "plugins/claude/claude-autoagent",
+        "plugins/codex/codex-multi-agent"
+      ]
+    },
+    {
+      "asset": "codex-multi-agent-history",
+      "sourceRepository": "asunoiwin/codex-multi-agent",
+      "visibility": "private",
+      "ref": "main@e92238b2177d",
+      "workingTree": "clean and ahead of origin; combined repository selected",
+      "destination": [
+        "plugins/codex/codex-multi-agent"
+      ]
+    },
+    {
+      "asset": "multi-agent-enhance-donor",
+      "sourceRepository": "asunoiwin/multi-agent-enhance",
+      "visibility": "public",
+      "ref": "main@3aae41a77762",
+      "workingTree": "2 local model-routing changes",
+      "destination": [
+        "plugins/claude/claude-autoagent"
+      ]
+    },
+    {
+      "asset": "claude-autoagent-history",
+      "sourceRepository": "asunoiwin/claude-autoagent",
+      "visibility": "public",
+      "ref": "main@0cfd96a3ab5c",
+      "workingTree": "only .DS_Store; generated file excluded",
+      "destination": [
+        "plugins/claude/claude-autoagent"
+      ]
+    },
+    {
+      "asset": "design-test-loop-history",
+      "sourceRepository": "asunoiwin/design-test-loop",
+      "visibility": "private",
+      "ref": "master@0a3402f45cd4",
+      "workingTree": "clean v1 history; current installed v2 source selected; runtime state excluded",
+      "destination": [
+        "plugins/claude/design-test-loop",
+        "plugins/codex/design-test-loop"
+      ]
+    },
+    {
+      "asset": "oci-cloud-ops",
+      "sourceRepository": "asunoiwin/oracle-cloud-ops-skill",
+      "visibility": "public",
+      "ref": "main@ab93122c67a8",
+      "workingTree": "clean",
+      "destination": [
+        "skills/oci-cloud-ops"
+      ]
+    },
+    {
+      "asset": "relay-node-ops",
+      "sourceRepository": "asunoiwin/relay-node-ops-skill",
+      "visibility": "public",
+      "ref": "main@8cd7e115ffd5",
+      "workingTree": "clean",
+      "destination": [
+        "skills/relay-node-ops"
+      ]
+    },
+    {
+      "asset": "linux-guard",
+      "sourceRepository": "asunoiwin/linux-guard",
+      "visibility": "public",
+      "ref": "master@f8ad7417f28c",
+      "workingTree": "clean",
+      "destination": [
+        "skills/linux-guard"
+      ]
+    }
+  ],
+  "exclusions": [
+    "credentials",
+    "private chats and task text",
+    "memory databases",
+    "task databases",
+    "hook state",
+    "baselines",
+    "backups",
+    "logs",
+    "generated dependencies and build output",
+    "unreviewed patches"
+  ]
+}

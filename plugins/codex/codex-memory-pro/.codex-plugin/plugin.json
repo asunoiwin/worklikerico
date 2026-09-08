@@ -1,0 +1,44 @@
+{
+  "name": "codex-memory-pro",
+  "version": "2.0.0",
+  "description": "Codex semantic memory plugin adapted from Claude Memory Pro. Provides LanceDB-backed hybrid recall, memory storage, cleanup, habit signals, and knowledge-graph routed retrieval through MCP.",
+  "author": {
+    "name": "Rico",
+    "email": "asunoiwin@gmail.com",
+    "url": "https://github.com/asunoiwin"
+  },
+  "homepage": "https://github.com/asunoiwin/worklikerico",
+  "repository": "https://github.com/asunoiwin/worklikerico",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "mcp",
+    "memory",
+    "lancedb",
+    "semantic-retrieval",
+    "hybrid-search"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Codex Memory Pro",
+    "shortDescription": "Semantic long-term memory for Codex",
+    "longDescription": "Codex Memory Pro brings the Claude Memory Pro retrieval stack to Codex through MCP: LanceDB vector storage, BM25 hybrid retrieval, knowledge-graph routing, time and importance weighting, memory cleanup, habit signals, and explicit recall/store/update tools.",
+    "developerName": "Rico",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/asunoiwin/worklikerico",
+    "privacyPolicyURL": "https://github.com/asunoiwin/worklikerico",
+    "termsOfServiceURL": "https://github.com/asunoiwin/worklikerico",
+    "defaultPrompt": [
+      "Recall project decisions before coding",
+      "Store this decision in memory",
+      "Audit and clean stale memories"
+    ],
+    "brandColor": "#155E75",
+    "screenshots": []
+  }
+}

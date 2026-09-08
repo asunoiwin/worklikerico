@@ -1,0 +1,43 @@
+{
+  "name": "codex-multi-agent",
+  "version": "1.0.0",
+  "description": "Codex multi-agent workflow plugin adapted from Claude multi-agent-enhance. Provides delegation patterns, routing rules, handoff protocol, and verification guidance for Codex spawn_agent workflows.",
+  "author": {
+    "name": "Rico",
+    "email": "asunoiwin@gmail.com",
+    "url": "https://github.com/asunoiwin"
+  },
+  "homepage": "https://github.com/asunoiwin/worklikerico",
+  "repository": "https://github.com/asunoiwin/worklikerico",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "multi-agent",
+    "delegation",
+    "parallel-work",
+    "workflow"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Multi-Agent",
+    "shortDescription": "Structured delegation for Codex agents",
+    "longDescription": "Codex Multi-Agent adapts the Claude multi-agent-enhance workflow to Codex. It defines when to delegate, how to split work safely, how to use explorers and workers, how to preserve handoffs, and how to keep the main Codex thread on the critical path.",
+    "developerName": "Rico",
+    "category": "Engineering",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/asunoiwin/worklikerico",
+    "privacyPolicyURL": "https://github.com/asunoiwin/worklikerico",
+    "termsOfServiceURL": "https://github.com/asunoiwin/worklikerico",
+    "defaultPrompt": [
+      "Use agents to inspect this codebase",
+      "Run parallel verification agents",
+      "Delegate this implementation safely"
+    ],
+    "brandColor": "#4F46E5",
+    "screenshots": []
+  }
+}

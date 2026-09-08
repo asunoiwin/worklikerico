@@ -1,0 +1,18 @@
+# 内部开发台账，不公开
+PROGRESS.md
+
+# 特征库自动更新的临时/备份产物
+feeds/.candidates.txt
+feeds/*.bak.*
+feeds/*.tmp
+
+# 应急响应时脚本产生的取证目录
+ir_*/
+checkup_*.txt
+
+# 密钥绝不入库
+*.key
+abuse-ch.key
+
+# 系统杂物
+.DS_Store

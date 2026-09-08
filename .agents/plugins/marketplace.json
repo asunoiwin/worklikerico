@@ -1,0 +1,44 @@
+{
+  "name": "worklikerico",
+  "interface": {
+    "displayName": "Work Like Rico"
+  },
+  "plugins": [
+    {
+      "name": "codex-memory-pro",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex/codex-memory-pro"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
+      "name": "codex-multi-agent",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex/codex-multi-agent"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Engineering"
+    },
+    {
+      "name": "design-test-loop",
+      "source": {
+        "source": "local",
+        "path": "./plugins/codex/design-test-loop"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

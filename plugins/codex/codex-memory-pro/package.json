@@ -1,0 +1,54 @@
+{
+  "name": "codex-memory-pro",
+  "version": "2.0.0",
+  "description": "Codex semantic memory plugin - LanceDB hybrid retrieval memory system exposed through MCP",
+  "type": "module",
+  "main": "dist/mcp-server.js",
+  "bin": {
+    "codex-memory-pro": "dist/mcp-server.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/mcp-server.js",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "keywords": [
+    "codex",
+    "mcp",
+    "memory",
+    "vector-search",
+    "lancedb",
+    "semantic-retrieval",
+    "codex-plugin"
+  ],
+  "author": "asunoiwin",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asunoiwin/worklikerico.git",
+    "directory": "plugins/codex/codex-memory-pro"
+  },
+  "homepage": "https://github.com/asunoiwin/worklikerico/tree/main/plugins/codex/codex-memory-pro",
+  "bugs": {
+    "url": "https://github.com/asunoiwin/worklikerico/issues"
+  },
+  "dependencies": {
+    "@lancedb/lancedb": "^0.26.2",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "apache-arrow": "^18.1.0",
+    "openai": "^4.77.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    ".codex-plugin",
+    "scripts",
+    "README.md"
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "dependencies": [
+    {
+      "asset": "memory-pro",
+      "requires": [
+        "Node.js 20+",
+        "npm"
+      ],
+      "packages": [
+        "@lancedb/lancedb",
+        "@modelcontextprotocol/sdk",
+        "apache-arrow",
+        "openai",
+        "zod"
+      ],
+      "configuration": [
+        "EMBEDDING_API_KEY",
+        "optional CAPTURE_API_KEY"
+      ],
+      "bundled": false
+    },
+    {
+      "asset": "design-test-loop",
+      "requires": [
+        "bash",
+        "python3",
+        "git"
+      ],
+      "bundled": false
+    },
+    {
+      "asset": "multi-agent",
+      "requires": [
+        "Codex multi-agent APIs or Claude Code agent support"
+      ],
+      "bundled": false
+    },
+    {
+      "asset": "oci-cloud-ops",
+      "requires": [
+        "OCI CLI or Python SDK when running live operations"
+      ],
+      "bundled": false
+    },
+    {
+      "asset": "tencent-cloud-ops",
+      "requires": [
+        "Tencent Cloud SDK/CLI when running live operations"
+      ],
+      "bundled": false
+    },
+    {
+      "asset": "mimo-delegate",
+      "requires": [
+        "MiMoCode CLI"
+      ],
+      "bundled": false
+    },
+    {
+      "asset": "xmind",
+      "requires": [
+        "Python 3 and skill-declared packages"
+      ],
+      "bundled": false
+    }
+  ],
+  "notVendored": [
+    "OpenAI bundled/system skills",
+    "OpenAI curated remote plugins",
+    "Claude official plugins",
+    "design/front-end third-party skill collections"
+  ]
+}

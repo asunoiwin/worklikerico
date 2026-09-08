@@ -1,0 +1,36 @@
+# Hermes 订阅接入
+
+已核对固定安装：Hermes `v2026.9.7` / `0.21.1` 原生支持两条最短路径，无需新增 provider。本机网络若依赖 HTTP 代理，需要让 Hermes 进程显式使用该代理。
+
+## GPT（ChatGPT/Codex 订阅）
+
+原生 provider 是 `openai-codex`，走 Hermes 自己的 device OAuth。OpenAI 官方也确认“使用 ChatGPT 登录”属于订阅访问。当前 Hermes 已是 **logged in**；没有复制或导入 `~/.codex/auth.json`，也没有使用 API Key。需要重新认证时运行：
+
+```bash
+hermes auth add openai-codex
+```
+
+本机已把默认 provider/model 设为 `openai-codex` / `gpt-5.4-mini`，保留 `openai_runtime: auto`，且没有配置 fallback。真实验证结果：纯文本响应约 4.02 秒；预加载 `work-like-rico` 的隔离合成本地文件任务约 15.63 秒，正确生成结果且输入文件未变。
+
+若本机依赖 HTTP 代理，只在 Hermes 私有 `.env` 中配置，仓库文档使用占位写法：
+
+```dotenv
+HTTP_PROXY=http://localhost:PORT
+HTTPS_PROXY=http://localhost:PORT
+NO_PROXY=localhost,127.0.0.1
+```
+
+这只证明 GPT 订阅推理和隔离的合成本地文件读写可用。真实资料、社交收件、自动回复、gateway 与无人值守闭环尚未验证。
+
+## MiMo（Token Plan 订阅）
+
+小米官方产品名是 **Token Plan**。它原生支持 Hermes；不是普通按量 API。订阅凭证为 `tp-` 开头的专属 Key，Base URL 以订阅页显示为准（中国区示例 `https://token-plan-cn.xiaomimimo.com/v1`），推荐模型 `mimo-v2.5-pro`。Hermes 内置 provider 为 `xiaomi`，配置键为 `XIAOMI_API_KEY`、`XIAOMI_BASE_URL`。用户先在 Token Plan 页面取得专属 Key/Base URL，再运行：
+
+```bash
+hermes setup
+# Quick Setup → Xiaomi MiMo → 填订阅专属 Key/Base URL → mimo-v2.5-pro
+```
+
+本机已有 MiMo Code CLI `0.1.13`，其可见配置只有 schema/plugin 键，不能证明 Token Plan 已登录。Hermes 当前也没有 MiMo 凭证或模型配置；尚未登录、未发起真实模型调用。
+
+官方依据：[OpenAI 认证](https://developers.openai.com/codex/auth) · [MiMo × Hermes](https://mimo.mi.com/docs/zh-CN/tokenplan/integration/hermes-agent) · [Token Plan 凭证](https://mimo.mi.com/docs/en-US/tokenplan/Token%20Plan/subscription) · [Hermes 固定版本 provider](https://github.com/NousResearch/hermes-agent/blob/v2026.9.7/hermes_cli/auth.py#L180-L241)

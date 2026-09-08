@@ -1,0 +1,26 @@
+{
+  "name": "worklikerico",
+  "version": "1.0.0",
+  "description": "Rico 自建 Claude Code 能力包",
+  "owner": {
+    "name": "Rico",
+    "url": "https://github.com/asunoiwin"
+  },
+  "plugins": [
+    {
+      "name": "claude-memory-pro",
+      "source": "./plugins/claude/claude-memory-pro",
+      "description": "语义记忆 MCP 与记忆管理工作流"
+    },
+    {
+      "name": "claude-autoagent",
+      "source": "./plugins/claude/claude-autoagent",
+      "description": "多 Agent 自动编排与恢复工作流"
+    },
+    {
+      "name": "design-test-loop",
+      "source": "./plugins/claude/design-test-loop",
+      "description": "设计、实现、测试与独立审计门禁"
+    }
+  ]
+}
