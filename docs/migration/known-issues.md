@@ -6,7 +6,7 @@
 
 因此，即使子任务已完成，只要成功 Handoff 的风险、历史内容或说明中出现上述词，也可能被误判为子 agent 异常。它也没有区分“这个子任务已经完成”和“总目标仍有剩余工作”。
 
-统一仓源码现只读取顶层 `agent_status`、`status`、`outcome`，或事件专属 `reason` 的直接状态字段/起始状态。明确的 `completed/succeeded/success` 优先；`cancelled/canceled` 作为用户停止终态正常退出；只有明确的 `failed/error/timeout/blocked` 才触发恢复。无状态或损坏 JSON 放行，可通过 `WORKLIKERICO_HOOK_VERBOSE=1` 输出诊断，不伪造完成。个人 HOME 中已安装的旧 hook 没有被修改。
+统一仓源码现只读取顶层 `agent_status`、`status`、`outcome`，或事件专属 `reason` 的直接状态字段/起始状态。明确的 `completed/succeeded/success` 优先；`cancelled/canceled` 作为用户停止终态正常退出；只有明确的 `failed/error/timeout/blocked` 才触发恢复。无状态或损坏 JSON 放行，可通过 `WORKLIKERICO_HOOK_VERBOSE=1` 输出诊断，不伪造完成。本机当前会话使用的两个旧 hook 已备份后同步修复，正式插件入口也已切到 worklikerico；旧身份禁用、缓存保留用于会话兼容。
 
 ## 普通等待被当成最终交付
 
@@ -27,7 +27,7 @@
 
 ## Memory 依赖审计
 
-隔离安装后的 `npm audit --omit=dev` 报告 8 个间接依赖问题：1 低、3 中、4 高、0 严重；均不是直接依赖，npm 表示有修复版本。首阶段为保持已验证的 Memory 运行逻辑和 lockfile，没有顺手升级依赖。发布前应单独开依赖升级任务，并重跑 21 项 Memory 测试和 MCP stdio 启动检查。
+隔离安装后的 `npm audit --omit=dev` 报告 8 个间接依赖问题：1 低、3 中、4 高、0 严重；均不是直接依赖，npm 表示有修复版本。首阶段为保持已验证的 Memory 运行逻辑和 lockfile，没有顺手升级依赖。这属于当前版本保留的依赖风险，不能据此宣称安全审计通过。后续单独升级依赖时，需重跑 21 项 Memory 测试和 MCP stdio 启动检查。
 
 ## Codex 本地缓存刷新与卸载
 

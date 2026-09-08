@@ -70,6 +70,29 @@ integrations/hermes/diagnose.sh
 
 不要只取该脚本最终 exit code；逐项读取 doctor、cron execution 和 Kanban 状态。Hermes 的部分诊断命令会在内部任务失败时仍返回 0。
 
+## macOS 后台服务
+
+2026-09-08 已用 Hermes 原生命令安装当前用户的 LaunchAgent：
+
+```bash
+hermes gateway install --no-start-now --start-on-login
+hermes gateway status
+launchctl print "gui/$(id -u)/ai.hermes.gateway"
+```
+
+实际生成 `${HOME}/Library/LaunchAgents/ai.hermes.gateway.plist`，运行目录、日志目录和 `HERMES_HOME` 均指向 `${HOME}/.config/worklikerico/hermes`。macOS 加载带 `RunAtLoad` 的 LaunchAgent 后立即启动了 gateway，因此即使传入 `--no-start-now`，这组参数仍产生了一次实际启动；没有再运行 `hermes gateway start`。
+
+当前 launchd 和 gateway 子进程均存活，`hermes gateway status` 报告由 launchd 监督并支持登录自启/崩溃重启。启动日志明确记录 0 个 channel target、Telegram/企业微信均 disabled、cron 为空；唯一 Kanban canary 仍为带 `needs_input` 原因的 blocked 状态。日志没有 agent dispatch、provider/API 请求或消息收发，因此这次只验证后台调度外壳，没有发起新的模型调用。
+
+停止并卸载后台入口使用原生命令：
+
+```bash
+hermes gateway stop
+hermes gateway uninstall
+```
+
+卸载服务不会删除隔离配置、认证、skills、cron/Kanban 台账或上游 checkout。
+
 ## Work Like Rico skill
 
 只把本仓库维护的一个 skill 作为本地 skill 链入隔离 Home，没有导入其他 Codex skills、AGENTS、MCP、memory 或 auth：
@@ -95,7 +118,7 @@ unlink "${HOME}/.config/worklikerico/hermes/skills/work-like-rico"
 
 失败 probe 的 script 以 7 退出，execution `2a7d3ece00694bb8a008a3a9497326a5` 正确记为 `failed` 并保存 stdout；但 `hermes cron run` 这个外层 CLI 命令仍返回 0。外部验收脚本不能只看 CLI exit code，必须再查 `hermes cron runs <job-id>` 或 execution ledger 的终态。临时失败 job 和脚本已删除，ledger 证据保留。
 
-健康边界：CLI 版本与 doctor 只证明本地 runtime 和依赖可用。未完成 Hermes provider OAuth 时，不能据此声称模型可调用；未启动 gateway 时，也不能据此声称 Telegram/企业微信可收发。
+健康边界：CLI 版本、doctor 和 gateway 进程只证明本地 runtime、依赖与后台外壳可用。模型登录及真实文本/文件调用另行验收；消息渠道仍未启用，也不能据此声称 Telegram/企业微信可收发。
 
 隔离边界以 `hermes auth status <provider>` 的实际结果验收，不以 `auth.json` 是否存在推断登录状态；认证文件可能由独立的授权任务并行维护。本次没有复制凭据、修改 auth 或发起模型调用。`hermes auth list` 会发现本机已有 `gh` CLI 的 Copilot 凭据；它不是本次导入。首次 doctor 初始化了 Hermes 上游自带的 bundled skills（332 个文件）和默认 `SOUL.md`；它们来自固定上游，不是从 Codex/Claude 或个人目录导入。实际 `.env` 和 `config.yaml` 权限为 0600，`~/.codex/config.toml` 没有 Hermes managed block。
 
