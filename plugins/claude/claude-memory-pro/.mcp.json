@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "claude-memory-pro": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/dist/mcp-server.js"
+      ],
+      "env": {
+        "MEMORY_DB_PATH": "${HOME}/.claude/memory-pro/lancedb",
+        "EMBEDDING_BASE_URL": "https://api.siliconflow.cn/v1",
+        "EMBEDDING_MODEL": "BAAI/bge-m3",
+        "CAPTURE_BASE_URL": "https://open.bigmodel.cn/api/paas/v4",
+        "CAPTURE_MODEL": "glm-4.5-flash"
+      }
+    }
+  }
+}

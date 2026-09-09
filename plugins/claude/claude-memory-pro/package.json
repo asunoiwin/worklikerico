@@ -1,6 +1,6 @@
 {
   "name": "claude-memory-pro",
-  "version": "1.0.0",
+  "version": "2.0.2",
   "description": "Claude Code 语义记忆增强插件 - 基于 LanceDB 向量数据库的混合检索记忆系统",
   "type": "module",
   "main": "dist/mcp-server.js",

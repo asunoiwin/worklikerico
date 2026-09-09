@@ -1,6 +1,6 @@
 {
   "name": "worklikerico",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Rico 自建 Claude Code 能力包",
   "owner": {
     "name": "Rico",
@@ -9,16 +9,19 @@
   "plugins": [
     {
       "name": "claude-memory-pro",
+      "version": "2.0.2",
       "source": "./plugins/claude/claude-memory-pro",
       "description": "语义记忆 MCP 与记忆管理工作流"
     },
     {
       "name": "claude-autoagent",
+      "version": "1.0.1",
       "source": "./plugins/claude/claude-autoagent",
       "description": "多 Agent 自动编排与恢复工作流"
     },
     {
       "name": "design-test-loop",
+      "version": "2.1.1",
       "source": "./plugins/claude/design-test-loop",
       "description": "设计、实现、测试与独立审计门禁"
     }

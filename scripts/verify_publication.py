@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
 """Fail closed when repository publication would include private or generated material."""
 from __future__ import annotations
-import json, re, sys
+import json, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCAN_ROOTS = [ROOT / p for p in ("plugins", "skills", "catalog", "scripts", "docs/migration", ".agents/plugins", ".claude-plugin")]
+SCAN_ROOTS = ("plugins", "skills", "catalog", "scripts", "docs/migration", ".agents/plugins", ".claude-plugin")
 FORBIDDEN_PARTS = {".git", "node_modules", "dist", "state", "baselines", "backups", "__pycache__", ".pytest_cache"}
 FORBIDDEN_NAMES = {"HANDOFF.md", ".DS_Store"}
 TEXT_SUFFIXES = {".json", ".md", ".toml", ".yaml", ".yml", ".py", ".sh", ".js", ".mjs", ".cjs", ".ts", ".txt"}
+MEMORY_DIST = Path("plugins/claude/claude-memory-pro/dist")
+MEMORY_SRC = Path("plugins/claude/claude-memory-pro/src")
 PATTERNS = {
     "private absolute home": re.compile(r"/Users/rico(?:/|\\b)"),
     "GitHub token": re.compile(r"gh[pousr]_[A-Za-z0-9_]{20,}"),
@@ -20,29 +22,70 @@ ALLOW = {
     ("private key block", "skills/oci-cloud-ops/scripts/tests/test_scripts.py"),
 }
 
-def rel(p: Path) -> str:
-    return p.relative_to(ROOT).as_posix()
+def rel(p: Path, root: Path = ROOT) -> str:
+    return p.relative_to(root).as_posix()
+
+
+def publication_candidates(root: Path) -> list[Path]:
+    result = subprocess.run(
+        ["git", "ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    return [root / item.decode() for item in result.stdout.split(b"\0") if item]
+
+
+def is_scanned_path(path: Path) -> bool:
+    parts = path.parts
+    return any(parts[: len(Path(base).parts)] == Path(base).parts for base in SCAN_ROOTS)
+
+
+def is_memory_runtime_dist(path: Path, root: Path) -> bool:
+    try:
+        output = path.relative_to(MEMORY_DIST)
+    except ValueError:
+        return False
+    if len(output.parts) != 1:
+        return False
+    if output.name.endswith(".d.ts"):
+        stem = output.name[:-5]
+    elif output.suffix == ".js":
+        stem = output.stem
+    else:
+        return False
+    return (root / MEMORY_SRC / f"{stem}.ts").is_file()
+
+
+def scan_publication(root: Path, candidates: list[Path]) -> list[str]:
+    errors: list[str] = []
+    for p in candidates:
+        if not p.is_file():
+            continue
+        relative = p.relative_to(root)
+        if not is_scanned_path(relative):
+            continue
+        rp = relative.as_posix()
+        forbidden = set(relative.parts) & FORBIDDEN_PARTS
+        if forbidden and not is_memory_runtime_dist(relative, root):
+            errors.append(f"generated/private path: {rp}")
+        if p.name in FORBIDDEN_NAMES or p.name.startswith("report-") or ".bak" in p.name:
+            errors.append(f"forbidden artifact: {rp}")
+        if p.suffix.lower() not in TEXT_SUFFIXES or p.stat().st_size > 2_000_000:
+            continue
+        text = p.read_text(errors="replace")
+        for label, pattern in PATTERNS.items():
+            if pattern.search(text) and (label, rp) not in ALLOW:
+                errors.append(f"{label}: {rp}")
+    return errors
 
 def main() -> int:
     errors: list[str] = []
-    for base in SCAN_ROOTS:
+    for name in SCAN_ROOTS:
+        base = ROOT / name
         if not base.exists():
             errors.append(f"missing required publication root: {rel(base)}")
-            continue
-        for p in base.rglob("*"):
-            if p.is_dir():
-                continue
-            rp = rel(p)
-            if any(part in FORBIDDEN_PARTS for part in p.relative_to(ROOT).parts):
-                errors.append(f"generated/private path: {rp}")
-            if p.name in FORBIDDEN_NAMES or p.name.startswith("report-") or ".bak" in p.name:
-                errors.append(f"forbidden artifact: {rp}")
-            if p.suffix.lower() not in TEXT_SUFFIXES or p.stat().st_size > 2_000_000:
-                continue
-            text = p.read_text(errors="replace")
-            for label, pattern in PATTERNS.items():
-                if pattern.search(text) and (label, rp) not in ALLOW:
-                    errors.append(f"{label}: {rp}")
+    errors.extend(scan_publication(ROOT, publication_candidates(ROOT)))
     for p in ROOT.glob("plugins/codex/*/.codex-plugin/plugin.json"):
         data = json.loads(p.read_text())
         allowed = {"id","name","version","description","skills","apps","mcpServers","interface","author","homepage","repository","license","keywords"}

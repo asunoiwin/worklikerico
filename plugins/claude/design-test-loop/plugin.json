@@ -1,6 +1,6 @@
 {
   "name": "design-test-loop",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "完整设计-实现-测试链路硬约束。3 个 hook + 4 个 gate（design / spec / clean+doubt / release）+ 多 skill 联动。把'AI 写代码屎山 / 不自审 / 不验真实效果'三大问题用工具级拦截兜底。",
   "author": "Rico + Claude Opus 4.7",
   "skills": [

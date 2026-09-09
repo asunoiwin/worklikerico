@@ -1,0 +1,8 @@
+{
+  "name": "design-test-loop",
+  "version": "2.1.1",
+  "description": "完整设计、实现、测试与独立审计门禁",
+  "author": {
+    "name": "Rico"
+  }
+}

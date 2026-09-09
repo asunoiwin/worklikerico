@@ -1,11 +1,15 @@
-[
-  {
-    "event": "SubagentStop",
-    "hooks": [
+{
+  "hooks": {
+    "PostToolUse": [
       {
-        "type": "command",
-        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/auto-route.sh"
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/auto-route.sh\""
+          }
+        ]
       }
     ]
   }
-]
+}
