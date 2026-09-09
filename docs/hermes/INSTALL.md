@@ -98,11 +98,11 @@ hermes gateway uninstall
 
 ## Work Like Rico skill
 
-核心工作规则作为本地 skill 链入隔离 Home。该链接不导入 Codex 的 AGENTS、MCP、memory 或 auth：
+核心工作规则通过统一管理入口链入隔离 Home。该链接不导入 Codex 的 AGENTS、MCP、memory 或 auth：
 
 ```bash
-ln -s "${worklikerico_root}/skill/work-like-rico" \
-  "${HOME}/.config/worklikerico/hermes/skills/work-like-rico"
+cd "${worklikerico_root}"
+python3 scripts/manage.py install --platform hermes --skill work-like-rico
 hermes skills list --source local
 hermes prompt-size --json
 ```
@@ -112,7 +112,7 @@ hermes prompt-size --json
 只卸载这个接入时执行：
 
 ```bash
-unlink "${HOME}/.config/worklikerico/hermes/skills/work-like-rico"
+python3 scripts/install_skills.py --target hermes --skill work-like-rico --remove
 ```
 
 该操作保留仓库里的 skill 源文件和 Hermes 默认 SOUL、bundled skills、memory 与其他状态。
@@ -122,7 +122,7 @@ unlink "${HOME}/.config/worklikerico/hermes/skills/work-like-rico"
 2026-09-09 首先开放 `xmind` 的 Hermes 安装资格。从统一仓库根目录明确选择安装项：
 
 ```bash
-python3 scripts/install_skills.py --target hermes --skill xmind
+python3 scripts/manage.py install --platform hermes --skill xmind
 hermes skills list --source local
 ```
 

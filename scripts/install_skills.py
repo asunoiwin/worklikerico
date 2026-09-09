@@ -12,10 +12,18 @@ TARGETS = {
     "hermes": ".config/worklikerico/hermes/skills",
 }
 
+
+def same_file(left: Path, right: Path) -> bool:
+    try:
+        return left.samefile(right)
+    except OSError:
+        return False
+
+
 def link(src: Path, dest: Path) -> str:
     dest.parent.mkdir(parents=True, exist_ok=True)
     if dest.is_symlink():
-        if dest.resolve() == src.resolve():
+        if same_file(dest, src):
             return "unchanged"
         raise RuntimeError(f"refusing to replace foreign symlink: {dest}")
     if dest.exists():
@@ -26,10 +34,19 @@ def link(src: Path, dest: Path) -> str:
 def unlink(src: Path, dest: Path) -> str:
     if not dest.is_symlink():
         return "absent"
-    if dest.resolve() != src.resolve():
+    if not same_file(dest, src):
         raise RuntimeError(f"refusing to remove foreign symlink: {dest}")
     dest.unlink()
     return "removed"
+
+
+def preflight_link(src: Path, dest: Path) -> None:
+    if dest.is_symlink():
+        if same_file(dest, src):
+            return
+        raise RuntimeError(f"refusing to replace foreign symlink: {dest}")
+    if dest.exists():
+        raise RuntimeError(f"refusing to replace existing path: {dest}")
 
 def main() -> int:
     ap = argparse.ArgumentParser()
@@ -57,7 +74,7 @@ def main() -> int:
                 "skill(s) do not support selected target(s): "
                 f"{', '.join(sorted(unsupported))}"
             )
-    changed = 0
+    operations = []
     for item in assets["skills"]:
         if selected_skills and item["name"] not in selected_skills:
             continue
@@ -68,9 +85,17 @@ def main() -> int:
             if selected_targets and target not in selected_targets:
                 continue
             dest = args.home.expanduser().resolve() / TARGETS[target] / item["name"]
-            result = unlink(src, dest) if args.remove else link(src, dest)
-            changed += result in {"linked", "removed"}
-            print(f"{result:9} {dest}")
+            operations.append((src, dest))
+
+    if not args.remove:
+        for src, dest in operations:
+            preflight_link(src, dest)
+
+    changed = 0
+    for src, dest in operations:
+        result = unlink(src, dest) if args.remove else link(src, dest)
+        changed += result in {"linked", "removed"}
+        print(f"{result:9} {dest}")
     print(f"completed: {changed} path(s) changed")
     return 0
 

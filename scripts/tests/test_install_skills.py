@@ -54,18 +54,90 @@ class InstallSkillsTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("unknown skill(s): missing-synthetic-skill", result.stderr)
 
-    def test_unsupported_skill_target_fails_before_writing(self):
+    def test_work_like_rico_is_available_for_hermes(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
             result = self.run_install(
                 home, "--skill", "work-like-rico", "--target", "hermes"
             )
-            self.assertNotEqual(result.returncode, 0)
-            self.assertIn(
-                "skill(s) do not support selected target(s): work-like-rico",
-                result.stderr,
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                (home / ".config/worklikerico/hermes/skills/work-like-rico").resolve(),
+                (ROOT / "skill/work-like-rico").resolve(),
             )
-            self.assertFalse((home / ".config").exists())
+
+    def test_foreign_target_is_not_replaced(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            target = home / ".config/worklikerico/hermes/skills/work-like-rico"
+            target.mkdir(parents=True)
+            marker = target / "foreign.txt"
+            marker.write_text("keep")
+
+            result = self.run_install(
+                home, "--skill", "work-like-rico", "--target", "hermes"
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("refusing to replace existing path", result.stderr)
+            self.assertEqual(marker.read_text(), "keep")
+
+    def test_alias_to_same_target_is_unchanged_and_removable(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            alias = home / "repository-alias"
+            alias.symlink_to(ROOT, target_is_directory=True)
+            target = home / ".config/worklikerico/hermes/skills/work-like-rico"
+            target.parent.mkdir(parents=True)
+            target.symlink_to(
+                alias / "skill/work-like-rico", target_is_directory=True
+            )
+
+            result = self.run_install(
+                home, "--skill", "work-like-rico", "--target", "hermes"
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("unchanged", result.stdout)
+
+            removed = self.run_install(
+                home,
+                "--skill",
+                "work-like-rico",
+                "--target",
+                "hermes",
+                "--remove",
+            )
+            self.assertEqual(removed.returncode, 0, removed.stderr)
+            self.assertFalse(target.exists())
+
+    def test_foreign_symlink_is_preserved_for_install_and_remove(self):
+        with tempfile.TemporaryDirectory() as temp:
+            home = Path(temp)
+            foreign = home / "foreign-skill"
+            foreign.mkdir()
+            (foreign / "SKILL.md").write_text("foreign")
+            target = home / ".config/worklikerico/hermes/skills/work-like-rico"
+            target.parent.mkdir(parents=True)
+            target.symlink_to(foreign, target_is_directory=True)
+
+            installed = self.run_install(
+                home, "--skill", "work-like-rico", "--target", "hermes"
+            )
+            removed = self.run_install(
+                home,
+                "--skill",
+                "work-like-rico",
+                "--target",
+                "hermes",
+                "--remove",
+            )
+
+            self.assertNotEqual(installed.returncode, 0)
+            self.assertIn("refusing to replace foreign symlink", installed.stderr)
+            self.assertNotEqual(removed.returncode, 0)
+            self.assertIn("refusing to remove foreign symlink", removed.stderr)
+            self.assertTrue(target.is_symlink())
+            self.assertTrue(target.samefile(foreign))
 
 
 if __name__ == "__main__":

@@ -26,12 +26,17 @@ def installed_identities(text: str) -> set[str]:
         if "installed," in line and line.split()
     }
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--home", type=Path, default=Path.home())
     ap.add_argument("--remove", action="store_true")
     ap.add_argument("--skip-build", action="store_true")
-    args = ap.parse_args()
+    ap.add_argument("--plugin", action="append", dest="plugins")
+    args = ap.parse_args(argv)
+    selected = list(dict.fromkeys(args.plugins or PLUGINS))
+    unknown = set(selected) - set(PLUGINS)
+    if unknown:
+        raise RuntimeError(f"unknown plugin(s): {', '.join(sorted(unknown))}")
     home = args.home.expanduser().resolve()
     codex_home = home / ".codex"
     codex_home.mkdir(parents=True, exist_ok=True)
@@ -43,13 +48,16 @@ def main() -> int:
     installed = installed_identities(listing)
 
     if args.remove:
-        for name in reversed(PLUGINS):
+        for name in reversed(selected):
             identity = f"{name}@{MARKET}"
             if identity in installed:
                 run(["codex", "plugin", "remove", identity], env)
-        if MARKET in marketplaces:
+        if args.plugins is None and MARKET in marketplaces:
             run(["codex", "plugin", "marketplace", "remove", MARKET], env)
-        print("removed worklikerico Codex plugins and marketplace")
+        if args.plugins is None:
+            print("removed worklikerico Codex plugins and marketplace")
+        else:
+            print("removed selected worklikerico Codex plugins")
         return 0
 
     if MARKET in marketplaces:
@@ -58,13 +66,13 @@ def main() -> int:
     else:
         run(["codex", "plugin", "marketplace", "add", str(ROOT)], env)
 
-    for name in PLUGINS:
+    for name in selected:
         identity = f"{name}@{MARKET}"
         if identity in installed:
             run(["codex", "plugin", "remove", identity], env)
         run(["codex", "plugin", "add", identity], env)
 
-    if not args.skip_build:
+    if "codex-memory-pro" in selected and not args.skip_build:
         manifest = json.loads((ROOT / "plugins/codex/codex-memory-pro/.codex-plugin/plugin.json").read_text())
         cache = codex_home / "plugins/cache" / MARKET / "codex-memory-pro" / manifest["version"]
         if not cache.is_dir():

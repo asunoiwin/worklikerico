@@ -17,12 +17,17 @@ def copy_source(src: Path, dest: Path) -> None:
     shutil.copytree(src, dest, ignore=shutil.ignore_patterns(*SKIP))
     (dest / MARKER).write_text("managed by worklikerico installer\n")
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--home", type=Path, default=Path.home())
     ap.add_argument("--remove", action="store_true")
     ap.add_argument("--skip-build", action="store_true")
-    args = ap.parse_args()
+    ap.add_argument("--plugin", action="append", dest="plugins")
+    args = ap.parse_args(argv)
+    selected = list(dict.fromkeys(args.plugins or PLUGINS))
+    unknown = set(selected) - set(PLUGINS)
+    if unknown:
+        raise RuntimeError(f"unknown plugin(s): {', '.join(sorted(unknown))}")
     home = args.home.expanduser().resolve()
     stage = home / ".local/share/worklikerico/claude"
     local = home / ".claude/plugins/local"
@@ -30,7 +35,7 @@ def main() -> int:
     env["HOME"] = str(home)
 
     if args.remove:
-        for name in PLUGINS:
+        for name in selected:
             dest = local / name
             managed = stage / name
             if dest.is_symlink() and dest.resolve() == managed.resolve():
@@ -42,7 +47,7 @@ def main() -> int:
 
     local.mkdir(parents=True, exist_ok=True)
     stage.mkdir(parents=True, exist_ok=True)
-    for name in PLUGINS:
+    for name in selected:
         src = ROOT / "plugins/claude" / name
         managed = stage / name
         copy_source(src, managed)

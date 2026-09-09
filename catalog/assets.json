@@ -8,7 +8,8 @@
       "name": "claude-memory-pro",
       "path": "plugins/claude/claude-memory-pro",
       "license": "MIT",
-      "build": "npm ci --legacy-peer-deps && npm run build"
+      "build": "npm ci --legacy-peer-deps && npm run build",
+      "description": "Claude 的语义长期记忆与检索插件"
     },
     {
       "family": "memory-pro",
@@ -16,7 +17,8 @@
       "name": "codex-memory-pro",
       "path": "plugins/codex/codex-memory-pro",
       "license": "MIT",
-      "build": "npm ci --legacy-peer-deps && npm run build"
+      "build": "npm ci --legacy-peer-deps && npm run build",
+      "description": "Codex 的语义长期记忆与检索 MCP 插件"
     },
     {
       "family": "multi-agent",
@@ -24,7 +26,8 @@
       "name": "claude-autoagent",
       "path": "plugins/claude/claude-autoagent",
       "license": "MIT",
-      "build": null
+      "build": null,
+      "description": "Claude 多代理任务路由与交接插件"
     },
     {
       "family": "multi-agent",
@@ -32,7 +35,8 @@
       "name": "codex-multi-agent",
       "path": "plugins/codex/codex-multi-agent",
       "license": "MIT",
-      "build": null
+      "build": null,
+      "description": "Codex 多代理委派、路由与交接插件"
     },
     {
       "family": "design-test-loop",
@@ -40,7 +44,8 @@
       "name": "design-test-loop",
       "path": "plugins/claude/design-test-loop",
       "license": "MIT",
-      "build": null
+      "build": null,
+      "description": "Claude 的设计、实现、测试和审计门禁"
     },
     {
       "family": "design-test-loop",
@@ -48,7 +53,8 @@
       "name": "design-test-loop",
       "path": "plugins/codex/design-test-loop",
       "license": "MIT",
-      "build": null
+      "build": null,
+      "description": "Codex 的设计、实现、测试和审计门禁"
     }
   ],
   "skills": [
@@ -58,9 +64,11 @@
       "installTargets": [
         "agents",
         "claude",
-        "codex"
+        "codex",
+        "hermes"
       ],
-      "classification": "repository-core"
+      "classification": "repository-core",
+      "description": "事实优先、授权内闭环和风险匹配验证的通用工作协议"
     },
     {
       "name": "oci-cloud-ops",
@@ -70,7 +78,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "OCI 计算资源巡检、启停、容量重试与安全变更"
     },
     {
       "name": "relay-node-ops",
@@ -80,7 +89,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "Linux 中继节点准备、部署、验证与回滚"
     },
     {
       "name": "linux-guard",
@@ -90,7 +100,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "Linux 入侵应急处置与日常安全体检"
     },
     {
       "name": "tencent-cloud-ops",
@@ -100,7 +111,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "腾讯云计算与网络资源的安全运维"
     },
     {
       "name": "proxmox-ve-ops",
@@ -110,7 +122,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "Proxmox VE 主机、虚机、存储和网络运维"
     },
     {
       "name": "tikhub-api-helper",
@@ -120,7 +133,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "查询 TikHub API 目录并生成受控调用"
     },
     {
       "name": "china-contract-review",
@@ -130,7 +144,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "中国合同文档审查与官方法源核验"
     },
     {
       "name": "mimo-delegate",
@@ -140,7 +155,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "通过本地 MiMoCode CLI 委派受限子任务"
     },
     {
       "name": "xmind",
@@ -151,7 +167,8 @@
         "codex",
         "hermes"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "创建、读取和校验 XMind 思维导图"
     },
     {
       "name": "upstream-test",
@@ -161,7 +178,8 @@
         "claude",
         "codex"
       ],
-      "classification": "self-built"
+      "classification": "self-built",
+      "description": "模型上游的批量接入和回归验收"
     },
     {
       "name": "blast-radius",
@@ -169,7 +187,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "分析代码变更的入口、状态、依赖与回退影响"
     },
     {
       "name": "channel-onboarding",
@@ -177,7 +196,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "检查模型渠道接入配置、权限与验证边界"
     },
     {
       "name": "devtools-verify",
@@ -185,7 +205,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "用浏览器开发者工具验证前端真实行为"
     },
     {
       "name": "doubt-review",
@@ -193,7 +214,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "提交前反向检查方案假设、遗漏和风险"
     },
     {
       "name": "lint-baseline",
@@ -201,7 +223,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "建立并维护已有代码库的 lint 基线"
     },
     {
       "name": "memory-rules",
@@ -209,7 +232,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "规范 Claude 记忆的召回、写入与边界"
     },
     {
       "name": "remove-ai-slop",
@@ -217,7 +241,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "清理本次变更中的冗余和模板化内容"
     },
     {
       "name": "spec-first",
@@ -225,7 +250,8 @@
       "installTargets": [
         "claude"
       ],
-      "classification": "claude-workflow-candidate"
+      "classification": "claude-workflow-candidate",
+      "description": "实现前固定目标、产物、边界和测试标准"
     }
   ],
   "exclusions": [

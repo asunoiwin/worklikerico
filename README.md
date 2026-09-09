@@ -31,22 +31,42 @@ git clone https://github.com/asunoiwin/worklikerico.git ~/.local/share/workliker
 cd ~/.local/share/worklikerico
 ```
 
-按使用的平台选择安装，不需要全部安装：
+先查看目录，再按使用的平台安装；默认安装该平台在目录中声明兼容的全部能力：
 
 ```bash
-# 通用技能，链接到当前仓库
-python3 scripts/install_skills.py
+python3 scripts/manage.py list
+python3 scripts/manage.py list --platform hermes
 
-# Codex 的三个插件
-python3 scripts/install_codex_plugins.py
-
-# Claude 的三个插件
-python3 scripts/install_claude_plugins.py
+python3 scripts/manage.py install --platform codex
+python3 scripts/manage.py install --platform claude
+python3 scripts/manage.py install --platform agents
+python3 scripts/manage.py install --platform hermes
 ```
 
-安装器保留同名冲突，重复执行不会创建副本。加 `--remove` 只移除本仓库受管入口；加 `--home /path/to/temp-home` 可隔离试装。Memory MCP 在安装位置构建，私人数据库和凭据留在用户目录。Claude 三个插件已通过 Claude Code 2.1.229 的市场校验、用户级安装和实际清单发现；尚未进行付费模型会话验收。详见[迁移说明](docs/migration/README.md)。
+`list` 的数量是本仓库目录在当前平台筛选下的 skill 条目和插件包，不是机器上的全部已安装能力；插件内部包含的 skill 和平台自带能力不重复展开。
 
-更新源码使用 `git pull`；插件复制到缓存后，需要重新执行对应安装器更新。核心协议可显式调用：
+只安装明确选择的模块时可重复指定 `--skill` 或 `--plugin`。只要出现任一筛选参数，就不会顺带安装该平台的其他能力：
+
+```bash
+python3 scripts/manage.py install --platform hermes --skill work-like-rico --skill xmind
+python3 scripts/manage.py install --platform codex --plugin codex-memory-pro
+python3 scripts/manage.py install --platform codex --skill xmind --dry-run
+```
+
+统一入口保留同名冲突，重复执行不会创建副本。加 `--home /path/to/temp-home` 可隔离试装；`--dry-run` 只显示计划，不拉取、构建或写目录。Memory MCP 在安装位置构建，私人数据库和凭据留在用户目录。原三个安装脚本继续保留，移除受管入口仍使用其 `--remove` 参数。Claude 三个插件已通过 Claude Code 2.1.229 的市场校验、用户级安装和实际清单发现；尚未进行付费模型会话验收。详见[迁移说明](docs/migration/README.md)。
+
+更新要求工作区干净，使用快进拉取；源码同步成功后才重新安装所选平台。拉取或安装失败都会非零退出，且不会继续后续步骤：
+
+```bash
+python3 scripts/manage.py update --platform codex
+python3 scripts/manage.py update --platform hermes --skill xmind --dry-run
+```
+
+技能入口是指向本仓库的链接，已有技能正文会随源码更新；新增技能仍需重新安装。Codex 缓存和 Claude 受管副本需要由更新命令重装。旧会话是否重新发现新版本取决于平台自身的会话加载时机。
+
+`update` 拉取的是整个共享仓库；模块筛选限制的是随后重装的入口，不是源码拉取范围。已有的其他技能链接也会跟随仓库更新。若只需用当前源码重装某个模块，使用带筛选的 `install`。
+
+核心协议可显式调用：
 
 ```text
 $work-like-rico 接手这个任务，先核对当前事实，再在授权范围内完成并检查结果。
