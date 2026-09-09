@@ -85,4 +85,10 @@ chmod 600 "${HERMES_HOME}/.env" "${HERMES_HOME}/config.yaml"
 
 Hermes 的会话分流不等于权限隔离：长期记忆和工具属于 profile，guest/slash 限制不能限制普通聊天调用的工具。未来开放多人前，应使用独立的受限团队配置并验证工具与数据范围，不能把个人助手的完整记忆和本机权限直接共享。当前首期无需为此另建系统。
 
+2026-09-09 当前配置窄查：两个平台各只允许本人，allow-all 均关闭；没有 profile 路由且未启用 multiplex。Telegram 官方 `getMe` 确认不能加入群、未启用读取群内全部消息。注意，禁止加入新群不等于证明机器人已退出所有既有群；全局用户允许列表在群内的生效规则仍需单独核对。
+
+原生会话键包含 profile、平台、聊天类型与 chat ID；当前普通群默认按发言者分会话，同一 thread 默认共享上下文。同一 profile 下的 memories、sessions、skills 和 workspace 仍共享。当前版本的 profile 路由支持平台及 guild/chat/thread，不按 user ID 路由；独立 profile 目录本身也不是操作系统的文件权限边界。团队开放前必须分别验证会话上下文、记忆/附件和本地工具权限，不把会话键分开当作多用户隔离已完成。
+
+机器人消息权限也不代表邮箱、微盘或个人历史权限。文件消息需要渠道接收与工具处理；本机文件由后台进程按系统权限访问。邮件读取、附件处理、草稿与发送需分别接入并验证对应账户和执行授权，当前未验收邮件能力。本次工作习惯研究通过已登录客户端只读历史，不是机器人自动取得了个人全部聊天。
+
 官方补充：[Telegram 收件范围](https://core.telegram.org/bots/faq#what-messages-will-my-bot-get) · [BotFather 群设置](https://core.telegram.org/bots/features#botfather) · [企微长连接接入](https://cloud.tencent.cn/document/product/1831/137051) · [企微连接模式限制](https://cloud.tencent.cn/document/product/1759/121473)。

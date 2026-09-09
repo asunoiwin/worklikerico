@@ -36,6 +36,14 @@ install -m 755 integrations/hermes/scripts/hermes-install-watchdog.sh \
 
 注意：本机负例中，script 以 7 退出后 ledger 正为 `failed`，但 `hermes cron run` 自身仍返回 shell code 0。验收必须读取 `cron runs`/ledger 的 execution 状态，不能只用外层命令退出码。
 
+## 暂停与当前执行的边界
+
+固定版本 0.21.1 的隔离实测确认：`cron pause` 只写入 paused/disabled 并阻止后续调度，不会中断已经运行的那一轮；全局 `/pause` 同样允许当前工作正常结束。不能把暂停成功当作执行已经停止。
+
+当前聊天任务的 `/stop` 使用另一条原生中断路径。进程级隔离测试已验证：它会释放会话运行态，中止登记的等待进程，并拒绝旧 run 清理替代 run；测试替换了模型、适配器和持久化外壳，没有实测消息渠道的停止回执，也不证明外部已完成的副作用可以撤回。
+
+本机当前仅保留一个 paused/disabled 的无模型安装巡检，没有启用的定时任务。日常监测继续暂停。本版本没有面向用户的单次 cron execution 取消命令；未来确需定时执行时，先验证该任务所需的停止边界，不用新建调度器掩盖这一限制。
+
 本阶段不运行 `hermes gateway install`。前台 gateway 的一次到期 tick、暂停和停止结果记录在安装验收中；后续阶段仍需验证进程重启和有副作用任务的幂等边界。
 
 来源：[Hermes cron 官方文档](https://github.com/NousResearch/hermes-agent/blob/v2026.9.7/website/docs/user-guide/features/cron.md)。

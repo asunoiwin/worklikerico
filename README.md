@@ -4,6 +4,16 @@
 
 Hermes 原生负责模型、消息入口、定时任务和看板。本仓库提供现有能力包与工作规则，不另建调度器、任务数据库、代理服务或控制台。
 
+工作规则共用源码，平台接入分别实现：
+
+| 使用入口 | 加载内容 | 负责的工作 |
+|---|---|---|
+| Hermes | 原生会话、工具、调度与已接入的工作规则 | 机器人接收任务、执行和跟进 |
+| Codex | Codex 版记忆、协作、验收插件及独立技能 | 开发协作、记忆检索与交付检查 |
+| Claude Code | Claude 版的对应插件 | 保留已有 Claude 工作环境的兼容入口 |
+
+六个包是三类能力的两套平台适配，不是六个 Hermes 插件。Hermes 当前确认直接链接的是 `work-like-rico` 核心规则；其他平台的技能、hook、MCP 配置和记忆库不会因此自动接入或共享。Claude 兼容工作不代表 Hermes 增加了 Claude 模型依赖。
+
 ## 当前交付
 
 - 已归并 6 个平台插件包和 19 项技能目录，包含腾讯云、OCI、PVE、记忆、多 agent 和验收工作流。本机入口已切换，11 个旧能力仓已归档并保留历史。
@@ -33,7 +43,7 @@ python3 scripts/install_codex_plugins.py
 python3 scripts/install_claude_plugins.py
 ```
 
-安装器保留同名冲突，重复执行不会创建副本。加 `--remove` 只移除本仓库受管入口；加 `--home /path/to/temp-home` 可隔离试装。Memory MCP 在安装位置构建，私人数据库和凭据留在用户目录。Claude 安装器已验证本地文件与构建流程，尚未通过真实 Claude CLI 的市场发现验证。详见[迁移说明](docs/migration/README.md)。
+安装器保留同名冲突，重复执行不会创建副本。加 `--remove` 只移除本仓库受管入口；加 `--home /path/to/temp-home` 可隔离试装。Memory MCP 在安装位置构建，私人数据库和凭据留在用户目录。Claude 三个插件已通过 Claude Code 2.1.229 的市场校验、用户级安装和实际清单发现；尚未进行付费模型会话验收。详见[迁移说明](docs/migration/README.md)。
 
 更新源码使用 `git pull`；插件复制到缓存后，需要重新执行对应安装器更新。核心协议可显式调用：
 

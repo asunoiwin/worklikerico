@@ -51,5 +51,5 @@ python3 scripts/install_claude_plugins.py --remove
 - Codex 三个 `@worklikerico` 插件已启用，旧身份已禁用；旧市场和缓存保留用于当前会话兼容与回滚。
 - Claude 三个受管插件已构建，Memory 入口和 4 条 DTL hook 已切换；两个旧手工插件目录移入回滚区。
 - 两套 Memory MCP 均通过 initialize 和 tools/list，分别发现 21 个工具；未执行记忆读写，私有 env 逐值保持，数据库路径语义不变。
-- 本机没有 Claude CLI，尚未验证 Claude 新会话的插件发现。Codex 新任务按新身份加载插件；当前会话所需的两个旧 hook 已同步修复。
+- 本机 Claude Code CLI 已恢复为 2.1.229；三个 Claude 插件通过严格 manifest 校验并以用户级启用，`plugin details` 实际发现 Memory 的 6 个技能、2 个 hook、1 个 MCP，AutoAgent 的 3 个技能、4 个 agent、1 个 hook，以及 Design Test Loop 的 3 个技能、3 个 hook。尚未进行付费模型会话验收。Codex 新任务按新身份加载插件；当前会话所需的两个旧 hook 已同步修复。
 - GitHub 的 11 个旧能力仓已实际核对为 archived，`worklikerico` 保持活跃。业务项目和第三方仓库不在这次归并范围内。
