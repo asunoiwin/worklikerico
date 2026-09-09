@@ -1,6 +1,6 @@
 {
   "name": "design-test-loop",
-  "version": "2.1.0-codex.1",
+  "version": "2.1.0-codex.2",
   "description": "完整设计-实现-测试-审计链路约束插件，移植自 Claude design-test-loop 2.1，并适配 Codex tool names。",
   "author": {
     "name": "Rico",

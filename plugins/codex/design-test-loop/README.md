@@ -1,13 +1,14 @@
 # design-test-loop Plugin
 
-完整设计-测试链路硬约束 plugin。状态机驱动 + PreToolUse 工具拦截 + 三 skill 闭环。
+完整设计-测试链路硬约束 plugin。状态机驱动 + PreToolUse 工具拦截 + 3 个核心 skill 与 3 个 gate 支撑 skill。
 
 ## 核心价值
 
 把"设计→实现→测试→审计"流程从**主 agent 自觉**升级为**工具调用级硬拦截**：
 - **PreToolUse hook 阻塞 Edit/Write**：未通过 design-gate 的代码改动被拒绝
 - **会话级状态机**：每个 session 独立跟踪，不可跳过流程
-- **3 skill 闭环**：design-gate（设计）→ strict-prod-audit（双轮测试）→ audit-verify（独立审计）
+- **3 个核心 skill 闭环**：design-gate（设计）→ strict-prod-audit（双轮测试）→ audit-verify（独立审计）
+- **3 个 gate 支撑 skill**：spec-first（实现前对齐）、remove-ai-slop（提交前清理）、doubt-review（提交前自审）
 
 ## 状态机
 
@@ -62,10 +63,13 @@ plugins/codex/design-test-loop/
 plugins/codex/design-test-loop/skills/
 ├── design-gate/SKILL.md         (设计阶段：PM gating + 架构师视野)
 ├── strict-prod-audit/SKILL.md   (双轮测试：dev 一测 + prod 二测)
-└── audit-verify/SKILL.md        (独立审计：第三 agent 复测)
+├── audit-verify/SKILL.md        (独立审计：第三 agent 复测)
+├── spec-first/SKILL.md          (实现门：首次写入前 5 段对齐)
+├── remove-ai-slop/SKILL.md      (提交门：只清本次 diff 的 AI 痕迹)
+└── doubt-review/SKILL.md        (提交门：CLAIM/EXTRACT/DOUBT/RECONCILE 自审)
 ```
 
-## 设计-测试链路三 skill
+## 设计-测试链路 skill
 
 ### 1. design-gate
 触发：新功能 / 改造 / 双面词典关键字
@@ -78,6 +82,14 @@ plugins/codex/design-test-loop/skills/
 ### 3. audit-verify
 触发：strict-prod-audit 二测 PASS 后
 输出：独立第三 agent 复测，不读二测报告，仅看原始需求 + 一测预期，独立设计 3 测试用例。结论不一致即阻断 + escalate。
+
+### 4. gate 支撑 skill
+
+- `spec-first`：design-gate 通过后的首次写入前，输出目标、产出物、边界、测试标准和影响面。
+- `remove-ai-slop`：git commit 前只检查并清理本次 diff 引入的 AI 痕迹。
+- `doubt-review`：git commit 前完成 CLAIM/EXTRACT/DOUBT/RECONCILE 四段自审。
+
+以上六个 skill 都随本插件安装；不依赖另行运行仓库根目录的通用 skill 安装器。
 
 ## 紧急绕过
 
