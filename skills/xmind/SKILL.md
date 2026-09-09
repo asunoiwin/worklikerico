@@ -58,11 +58,13 @@ This skill supports both Chinese and English. When the user makes a request, ide
 ## How to create an XMind file
 
 1. Build a JSON object with `path` and `sheets` fields (see format below)
-2. Write it to a temp file, then run:
+2. Write it to a temp JSON file with the file-writing tool, then run:
 
 ```bash
-node <skill-dir>/scripts/create_xmind.mjs < /tmp/xmind_input.json
+node <skill-dir>/scripts/create_xmind.mjs --input /tmp/xmind_input.json
 ```
+
+Do not pipe JSON into `node`; Hermes blocks pipe-to-interpreter commands. The creator reopens the written `.xmind` and prints `Created` plus `Verified` evidence only after its format, requested topic tree, and relationships match.
 
 Where `<skill-dir>` is the directory containing this SKILL.md file.
 
@@ -106,7 +108,7 @@ Both scripts handle two XMind format families:
 
 **Checking format:** Use `format_info` action to inspect an existing file:
 ```bash
-echo '{"action": "format_info", "path": "/path/to/file.xmind"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_format_info.json
 ```
 
 When the user says "兼容旧版" / "XMind 8格式" / "旧版本格式" / "old format" / "XMind 8 compatible" / "兼容其他编辑器", use `"format": "legacy"`. Otherwise use the default zen format.
@@ -276,10 +278,10 @@ Then read `/tmp/extracted.txt` to build the mind map.
 
 ## How to read and analyze XMind files
 
-Pipe a JSON object with an `action` field to the read script:
+Write a JSON object with an `action` field to a temp file, then pass that reviewed file to the read script:
 
 ```bash
-echo '{"action": "read", "path": "/path/to/file.xmind"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_read.json
 ```
 
 ### Available actions
@@ -299,35 +301,35 @@ echo '{"action": "read", "path": "/path/to/file.xmind"}' | node <skill-dir>/scri
 
 **`read`** — Parse a complete mind map:
 ```bash
-echo '{"action": "read", "path": "/path/to/file.xmind"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_read.json
 ```
 Returns an array of sheets, each with a root topic containing the full tree structure including notes, labels, markers, task status, relationships, etc.
 
 **`list`** — Find .xmind files in a directory:
 ```bash
-echo '{"action": "list", "directory": "/Users/user/Documents"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_list.json
 ```
 
 **`search_files`** — Search by filename or content:
 ```bash
-echo '{"action": "search_files", "pattern": "project", "directory": "/Users/user"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_search_files.json
 ```
 Filename matches are returned first, then content matches.
 
 **`extract_node`** — Fuzzy search when you don't know the exact path:
 ```bash
-echo '{"action": "extract_node", "path": "/path/to/file.xmind", "searchQuery": "Backend API"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_extract_node.json
 ```
 Returns top 5 matches with confidence scores. Use when exploring complex maps.
 
 **`extract_node_by_id`** — Direct ID lookup (fastest):
 ```bash
-echo '{"action": "extract_node_by_id", "path": "/path/to/file.xmind", "nodeId": "abc123def456"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_extract_node_by_id.json
 ```
 
 **`search_nodes`** — Advanced search with filters:
 ```bash
-echo '{"action": "search_nodes", "path": "/path/to/file.xmind", "query": "auth", "searchIn": ["title", "notes"], "taskStatus": "todo"}' | node <skill-dir>/scripts/read_xmind.mjs
+node <skill-dir>/scripts/read_xmind.mjs --input /tmp/xmind_search_nodes.json
 ```
 `searchIn` options: `title`, `notes`, `labels`, `callouts`, `tasks`. Default: all fields.
 
@@ -342,7 +344,7 @@ echo '{"action": "search_nodes", "path": "/path/to/file.xmind", "query": "auth",
 
 ## Important rules
 
-- **NEVER use `unzip`, `zipinfo`, or any external ZIP tool on .xmind files.** Both scripts handle ZIP internally — `create_xmind.mjs` writes ZIP with built-in code, `read_xmind.mjs` reads ZIP with built-in code. Just pipe JSON to the script and it handles everything. There is no need to extract, decompress, or inspect the .xmind file yourself.
+- **NEVER use `unzip`, `zipinfo`, or any external ZIP tool on .xmind files.** Both scripts handle ZIP internally. Write the request JSON to a temp file with the file tool and use `--input`; do not pipe JSON into `node`. There is no need to extract or decompress the `.xmind` yourself.
 - **When editing/adding to an existing .xmind file, always include every sheet with its original `title`** — even sheets you aren't changing — so `create_xmind.mjs` can match them up and preserve their theme/styling/thumbnail (see "Updating an existing file" above). Only omit or retitle a sheet when you intentionally want it reset to default styling.
 - The output path MUST end with `.xmind`
 - Always write the file where the user requests (e.g. ~/Downloads, ~/Desktop)

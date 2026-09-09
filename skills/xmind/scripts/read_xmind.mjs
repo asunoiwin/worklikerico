@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
-// XMind file reader - reads JSON from stdin, outputs parsed data to stdout
-// Usage: echo '{"action":"read","path":"/tmp/file.xmind"}' | node read_xmind.mjs
+// XMind file reader - reads JSON from a reviewed file or stdin, outputs parsed data to stdout
+// Usage: node read_xmind.mjs --input /tmp/xmind-read.json
+// Stdin remains supported for compatibility: node read_xmind.mjs < /tmp/xmind-read.json
 // No external dependencies — uses only Node.js built-ins.
 
 import { readFileSync, readdirSync, statSync } from 'fs';
 import { resolve, join, basename, normalize } from 'path';
+import { pathToFileURL } from 'url';
 import { inflateRawSync } from 'zlib';
 
 // ─── Minimal ZIP reader (PKZIP APPNOTE 6.3.3) ───
@@ -786,7 +788,7 @@ function parseXMindZen(filePath) {
     }).filter(Boolean);
 }
 
-function parseXMind(filePath) {
+export function parseXMind(filePath) {
     const buf = readFileSync(resolve(filePath));
     const zip = readZip(buf);
     const names = zip.names();
@@ -1022,7 +1024,7 @@ function actionSearchNodes(input) {
     };
 }
 
-function actionFormatInfo(input) {
+export function actionFormatInfo(input) {
     if (!input.path) throw new Error('Missing "path"');
     const buf = readFileSync(resolve(input.path));
     const zip = readZip(buf);
@@ -1068,8 +1070,16 @@ const actions = {
 };
 
 async function main() {
-    let rawInput = '';
-    for await (const chunk of process.stdin) rawInput += chunk;
+    const inputIndex = process.argv.indexOf('--input');
+    let rawInput;
+    if (inputIndex !== -1) {
+        const inputPath = process.argv[inputIndex + 1];
+        if (!inputPath) throw new Error('Missing path after --input');
+        rawInput = readFileSync(resolve(inputPath), 'utf-8');
+    } else {
+        rawInput = '';
+        for await (const chunk of process.stdin) rawInput += chunk;
+    }
 
     const input = JSON.parse(rawInput);
     if (!input.action) throw new Error('Missing "action" field');
@@ -1081,7 +1091,9 @@ async function main() {
     process.stdout.write(JSON.stringify(result, null, 2) + '\n');
 }
 
-main().catch(err => {
-    process.stderr.write(`Error: ${err.message}\n`);
-    process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+    main().catch(err => {
+        process.stderr.write(`Error: ${err.message}\n`);
+        process.exit(1);
+    });
+}

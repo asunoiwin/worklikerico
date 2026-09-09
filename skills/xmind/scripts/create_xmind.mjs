@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 
-// XMind file creator - reads JSON from stdin, writes .xmind file
-// Usage: echo '{"path":"/tmp/test.xmind","sheets":[...]}' | node create_xmind.mjs
-// Or:   node create_xmind.mjs --path /tmp/test.xmind < data.json
+// XMind file creator - reads JSON from a reviewed file or stdin, writes .xmind file
+// Usage: node create_xmind.mjs --input /tmp/xmind-create.json
+// Stdin remains supported for compatibility: node create_xmind.mjs < /tmp/xmind-create.json
 // No external dependencies — uses only Node.js built-ins.
 
 import { mkdir, writeFile, readFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import { dirname, resolve, extname } from 'path';
+import { pathToFileURL } from 'url';
 import { randomUUID, createHash } from 'crypto';
 import { deflateRawSync, inflateRawSync } from 'zlib';
+import { parseXMind, actionFormatInfo } from './read_xmind.mjs';
 
 // ─── Minimal ZIP writer (PKZIP APPNOTE 6.3.3) ───
 
@@ -681,10 +683,125 @@ function buildLegacyManifest(fileEntries) {
     return xml;
 }
 
+function verifyTopic(expected, actual, location) {
+    if (!actual || actual.title !== expected.title) {
+        throw new Error(
+            `Verification failed at ${location}: expected topic "${expected.title}", got "${actual?.title || 'missing'}"`,
+        );
+    }
+    const expectedChildren = expected.children || [];
+    const actualChildren = actual.children || [];
+    if (actualChildren.length !== expectedChildren.length) {
+        throw new Error(
+            `Verification failed at ${location}: expected ${expectedChildren.length} children, got ${actualChildren.length}`,
+        );
+    }
+    let topicCount = 1;
+    for (let i = 0; i < expectedChildren.length; i++) {
+        topicCount += verifyTopic(
+            expectedChildren[i],
+            actualChildren[i],
+            `${location} > ${expectedChildren[i].title}`,
+        );
+    }
+    return topicCount;
+}
+
+function collectTitleIds(node, byTitle = new Map()) {
+    if (!byTitle.has(node.title)) byTitle.set(node.title, new Set());
+    byTitle.get(node.title).add(node.id);
+    for (const child of node.children || []) collectTitleIds(child, byTitle);
+    for (const detached of node.detachedTopics || []) collectTitleIds(detached, byTitle);
+    return byTitle;
+}
+
+export function verifyCreatedXMind(filePath, input, expectedFormat) {
+    const format = actionFormatInfo({ path: filePath });
+    if (format.format !== expectedFormat) {
+        throw new Error(
+            `Verification failed: expected ${expectedFormat} format, got ${format.format}`,
+        );
+    }
+
+    const actualSheets = parseXMind(filePath);
+    if (actualSheets.length !== input.sheets.length) {
+        throw new Error(
+            `Verification failed: expected ${input.sheets.length} sheets, got ${actualSheets.length}`,
+        );
+    }
+
+    let topicCount = 0;
+    let relationshipCount = 0;
+    for (let i = 0; i < input.sheets.length; i++) {
+        const expectedSheet = input.sheets[i];
+        const actualRoot = actualSheets[i];
+        if (actualRoot.sheetTitle !== expectedSheet.title) {
+            throw new Error(
+                `Verification failed: expected sheet "${expectedSheet.title}", got "${actualRoot.sheetTitle || 'missing'}"`,
+            );
+        }
+        topicCount += verifyTopic(expectedSheet.rootTopic, actualRoot, expectedSheet.title);
+
+        const expectedDetached = expectedSheet.detachedTopics || [];
+        const actualDetached = actualRoot.detachedTopics || [];
+        if (actualDetached.length !== expectedDetached.length) {
+            throw new Error(
+                `Verification failed in ${expectedSheet.title}: expected ${expectedDetached.length} detached topics, got ${actualDetached.length}`,
+            );
+        }
+        for (let j = 0; j < expectedDetached.length; j++) {
+            topicCount += verifyTopic(
+                expectedDetached[j],
+                actualDetached[j],
+                `${expectedSheet.title} > ${expectedDetached[j].title}`,
+            );
+        }
+
+        const titleIds = collectTitleIds(actualRoot);
+        const remainingRelationships = [...(actualRoot.relationships || [])];
+        for (const expectedRelationship of expectedSheet.relationships || []) {
+            const sourceIds = titleIds.get(expectedRelationship.sourceTitle) || new Set();
+            const targetIds = titleIds.get(expectedRelationship.targetTitle) || new Set();
+            const matchIndex = remainingRelationships.findIndex(rel =>
+                sourceIds.has(rel.end1Id)
+                && targetIds.has(rel.end2Id)
+                && (rel.title || '') === (expectedRelationship.title || '')
+            );
+            if (matchIndex === -1) {
+                throw new Error(
+                    `Verification failed in ${expectedSheet.title}: missing relationship "${expectedRelationship.sourceTitle}" -> "${expectedRelationship.targetTitle}"`,
+                );
+            }
+            remainingRelationships.splice(matchIndex, 1);
+            relationshipCount++;
+        }
+        if (remainingRelationships.length > 0) {
+            throw new Error(
+                `Verification failed in ${expectedSheet.title}: found ${remainingRelationships.length} unexpected relationships`,
+            );
+        }
+    }
+
+    return {
+        format: format.format,
+        sheetCount: actualSheets.length,
+        topicCount,
+        relationshipCount,
+    };
+}
+
 // Main
 async function main() {
-    let rawInput = '';
-    for await (const chunk of process.stdin) rawInput += chunk;
+    const inputIndex = process.argv.indexOf('--input');
+    let rawInput;
+    if (inputIndex !== -1) {
+        const inputPath = process.argv[inputIndex + 1];
+        if (!inputPath) throw new Error('Missing path after --input');
+        rawInput = await readFile(resolve(inputPath), 'utf-8');
+    } else {
+        rawInput = '';
+        for await (const chunk of process.stdin) rawInput += chunk;
+    }
 
     const input = JSON.parse(rawInput);
     const outputPath = input.path || process.argv.find((a, i) => process.argv[i - 1] === '--path');
@@ -768,6 +885,7 @@ async function main() {
 
     const { contentJson, attachments } = builder.build(input.sheets, existing?.sheetsByTitle);
 
+    let formatLabel;
     if (resolvedFormat === 'legacy') {
         // Legacy XML format (XMind 3–8 compatible)
         const { resourceFiles } = await builder.finalize(contentJson, attachments);
@@ -784,7 +902,7 @@ async function main() {
             ...resourceFiles,
         ]);
         await writeFile(resolvedPath, zipBuffer);
-        console.log(`Created (XMind 8 / legacy XML format): ${resolvedPath}`);
+        formatLabel = 'XMind 8 / legacy XML format';
     } else {
         // Modern JSON format (XMind Zen / 2020+)
         const { content, metadata, manifest, resourceFiles } = await builder.finalize(
@@ -797,11 +915,18 @@ async function main() {
             ...resourceFiles,
         ]);
         await writeFile(resolvedPath, zipBuffer);
-        console.log(`Created (XMind Zen / modern JSON format): ${resolvedPath}`);
+        formatLabel = 'XMind Zen / modern JSON format';
     }
+
+    const verification = verifyCreatedXMind(resolvedPath, input, resolvedFormat);
+    const sha256 = createHash('sha256').update(await readFile(resolvedPath)).digest('hex');
+    console.log(`Created (${formatLabel}): ${resolvedPath}`);
+    console.log(`Verified: ${JSON.stringify({ path: resolvedPath, sha256, ...verification })}`);
 }
 
-main().catch(err => {
-    console.error(`Error: ${err.message}`);
-    process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+    main().catch(err => {
+        console.error(`Error: ${err.message}`);
+        process.exit(1);
+    });
+}
