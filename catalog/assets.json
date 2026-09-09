@@ -109,7 +109,8 @@
       "installTargets": [
         "agents",
         "claude",
-        "codex"
+        "codex",
+        "hermes"
       ],
       "classification": "self-built",
       "description": "腾讯云计算与网络资源的安全运维"

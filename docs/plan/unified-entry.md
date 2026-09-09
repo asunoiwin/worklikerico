@@ -18,7 +18,7 @@
 
 为支持可选模块，底层插件安装器可增加兼容的 `--plugin NAME` 筛选，默认行为保持不变。不得让“只装一个 skill”顺带安装所有插件。
 
-Hermes 核心 `work-like-rico` 纳入已有 catalog 的 hermes target。当前只管理已明确兼容的核心与 xmind，不因此宣称其他平台的插件都能装入 Hermes。SOUL、订阅、渠道与后台服务配置继续沿用现有独立安装说明。
+Hermes 核心 `work-like-rico`、xmind、tencent-cloud-ops 纳入已有 catalog 的 hermes target。腾讯云技能已验证安装与原生发现，业务执行未验收。不因此宣称其他平台的插件或技能都能装入 Hermes。SOUL、订阅、渠道与后台服务配置继续沿用现有独立安装说明。
 
 ## 影响范围五项
 
@@ -42,6 +42,28 @@ Hermes 核心 `work-like-rico` 纳入已有 catalog 的 hermes target。当前�
 ## 双面影响
 
 正向：用户按平台和目录名称管理一个集合，不再记忆脚本分工；可只装所需模块。反向：首次默认平台安装仍会安装该平台全部兼容模块，所以首页必须解释选择语义；update 只同步干净工作区，不能覆盖正在编辑的内容。规则文案随软链接更新与插件复制到缓存的差异应说清楚，不承诺旧会话自动重新加载。
+
+### 腾讯云技能补齐（2026-09-09）
+
+用户明确要求 Hermes 复用长期使用的腾讯云运维技能。本次只给 `tencent-cloud-ops` 增加 Hermes 安装资格，不修改技能正文、工具、其他技能平台或真实用户安装。
+
+| 五元项 | 命中与检查 |
+|---|---|
+| 后端模块/包 | 无；仅 catalog 声明 |
+| DB 表/字段 | 无 |
+| API endpoint | 无；不调用腾讯云 API |
+| 前端页面 | 无 |
+| 配置项/规则 | `installTargets` 增加 `hermes`；定向安装仍使用 `--skill tencent-cloud-ops` |
+
+同义词组：`tencent-cloud-ops / 腾讯云 / hermes target`。
+
+| 状态 | 位置 | 处理 |
+|---|---|---|
+| 已修 | catalog、本文 | 增加 Hermes 安装资格并说明默认集合影响 |
+| 未修 | 无 | 本轮没有同类遗漏 |
+| 不需修 | skill 正文、其他 skill、Hermes loader | 正文已是标准 SKILL；loader 已支持目录简介与按需正文；其他技能按实际用途分批接入 |
+
+双面影响：正向是统一入口可为 Hermes 定向安装腾讯云技能；反向是无筛选 `install --platform hermes` 以后也会包含该技能。日常使用推荐显式执行 `--skill tencent-cloud-ops`，避免把平台默认全集当成个人必装清单。用户面仅表现为目录与安装选择增加一项；管理面是 catalog 多一个目标；数据面没有数据库或运行状态变更。
 
 ## 验收
 

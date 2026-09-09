@@ -128,6 +128,8 @@ hermes skills list --source local
 
 入口链接到仓库中的技能源码；重复安装保持原入口，遇到预存同名目录会报告冲突并保留它。当前不批量迁移其他平台的技能、插件或数据。原生列表显示 enabled 只证明发现成功，实际创建与回读另按[实测记录](VERIFICATION.md)验收。
 
+同日补入用户点名的腾讯云技能，可定向运行 `python3 scripts/manage.py install --platform hermes --skill tencent-cloud-ops`。真实安装、重复安装和 Hermes 原生发现已通过；没有调用腾讯云业务接口。当前无筛选的 Hermes 默认集合包含核心、XMind 和腾讯云三项，其他技能继续按用途选择接入。
+
 移除该受控入口时运行：
 
 ```bash
@@ -163,3 +165,13 @@ unlink "${HOME}/.local/bin/hermes"
 ## 默认工作要求
 
 `integrations/hermes/SOUL.md` 提供简短的默认工作要求，普通对话也会加载。新安装使用上面的 `cp -n` 保留既有自定义角色；本机初次应用前已私有备份上游默认角色。工程或长期任务再按需读取 `work-like-rico` 技能，不把每件日常小事变成重型流程。
+
+## 原生记忆
+
+当前方案直接使用 Hermes 内置记忆，不安装 Codex 记忆插件或启用外部 memory provider。统一仓库管理能力来源，各平台仍使用合适的原生实现。
+
+`Config` 提供内置记忆开关、字符上限和写入审批；`System → Memory` 可查看记忆状态。`Plugins → Provider Plugins → Memory Provider` 是外部服务选择入口，当前无需配置。
+
+长期个人偏好放在当前 profile 的 `memories/USER.md`，稳定通用事实放在 `memories/MEMORY.md`；工作进度使用原生 session，确需跨会话交接的任务使用原生 Kanban。不要把完整聊天和持续变化的待办塞入常驻记忆。内置记忆在新会话开始时注入，字符上限不等于固定 token 上限。
+
+内置文件读写无需 embedding 或单独模型服务。`auxiliary.background_review.enabled` 控制自动后台复盘是否另行调用模型；关闭通知不等于停止调用。本机已明确设为 `false`，保留两类记忆启用及写入审批；原生入口在自动复盘触发时重新读取此开关，不需要为此重启 gateway，已开始的复盘不因此被取消。实际配置与验证范围以[实施状态](../plan/status.md)为准。

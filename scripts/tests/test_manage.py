@@ -34,9 +34,9 @@ class ManageTests(unittest.TestCase):
         self.assertNotIn("将 Rico 的项目无关工作方法", result.stdout)
         self.assertIn("创建、读取和校验 XMind 思维导图", result.stdout)
         self.assertNotIn("自研独立技能", result.stdout)
-        self.assertIn("TOTAL\t2 repository entries\t2 skills\t0 plugins", result.stdout)
+        self.assertIn("TOTAL\t3 repository entries\t3 skills\t0 plugins", result.stdout)
 
-    def test_hermes_default_installs_core_and_xmind_idempotently(self):
+    def test_hermes_default_installs_declared_skills_idempotently(self):
         with tempfile.TemporaryDirectory() as temp:
             home = Path(temp)
             args = ("install", "--platform", "hermes", "--home", str(home))
@@ -44,7 +44,8 @@ class ManageTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             skills = home / ".config/worklikerico/hermes/skills"
             self.assertEqual(
-                {path.name for path in skills.iterdir()}, {"work-like-rico", "xmind"}
+                {path.name for path in skills.iterdir()},
+                {"work-like-rico", "tencent-cloud-ops", "xmind"},
             )
             self.assertEqual(
                 (skills / "work-like-rico").resolve(),
