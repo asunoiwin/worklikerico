@@ -98,7 +98,7 @@ hermes gateway uninstall
 
 ## Work Like Rico skill
 
-只把本仓库维护的一个 skill 作为本地 skill 链入隔离 Home，没有导入其他 Codex skills、AGENTS、MCP、memory 或 auth：
+核心工作规则作为本地 skill 链入隔离 Home。该链接不导入 Codex 的 AGENTS、MCP、memory 或 auth：
 
 ```bash
 ln -s "${worklikerico_root}/skill/work-like-rico" \
@@ -116,6 +116,25 @@ unlink "${HOME}/.config/worklikerico/hermes/skills/work-like-rico"
 ```
 
 该操作保留仓库里的 skill 源文件和 Hermes 默认 SOUL、bundled skills、memory 与其他状态。
+
+## 按需接入专项技能
+
+2026-09-09 首先开放 `xmind` 的 Hermes 安装资格。从统一仓库根目录明确选择安装项：
+
+```bash
+python3 scripts/install_skills.py --target hermes --skill xmind
+hermes skills list --source local
+```
+
+入口链接到仓库中的技能源码；重复安装保持原入口，遇到预存同名目录会报告冲突并保留它。当前不批量迁移其他平台的技能、插件或数据。原生列表显示 enabled 只证明发现成功，实际创建与回读另按[实测记录](VERIFICATION.md)验收。
+
+移除该受控入口时运行：
+
+```bash
+python3 scripts/install_skills.py --target hermes --skill xmind --remove
+```
+
+移除入口不会删除仓库源码或已经创建的 XMind 文件。这里沿用本项目的隔离 Home 布局；不要把安装器的 `--home` 测试根目录参数当成任意 Hermes 配置目录。
 
 原生离线状态能力也已实测：Kanban 创建了一个 blocked canary，重复使用同一 idempotency key 返回同一个 task ID，完成不存在的 task 返回非零；cron 拒绝无 script 的 `--no-agent` job 和越出 `${HERMES_HOME}/scripts` 的路径。唯一 no-agent watchdog 在前台 gateway 中按时完成一次，execution ID 为 `f3ddfd75a67742d9ab8daea864026f4b`，空 stdout 没有投递；随后 job 已暂停、gateway 已停止。该次测量发生在模型授权之前，只证明 scheduler/script/ledger；后续模型接入结果见 [VERIFICATION.md](VERIFICATION.md)。
 

@@ -12,7 +12,7 @@ Hermes 原生负责模型、消息入口、定时任务和看板。本仓库提�
 | Codex | Codex 版记忆、协作、验收插件及独立技能 | 开发协作、记忆检索与交付检查 |
 | Claude Code | Claude 版的对应插件 | 保留已有 Claude 工作环境的兼容入口 |
 
-六个包是三类能力的两套平台适配，不是六个 Hermes 插件。Hermes 当前确认直接链接的是 `work-like-rico` 核心规则；其他平台的技能、hook、MCP 配置和记忆库不会因此自动接入或共享。Claude 兼容工作不代表 Hermes 增加了 Claude 模型依赖。
+六个包是三类能力的两套平台适配，不是六个 Hermes 插件。Hermes 当前已链接 `work-like-rico` 核心规则与 `xmind` 专项技能，后者已通过一次原生 CLI 创建及回读验证；其他平台的技能、hook、MCP 配置和记忆库不会因此自动接入或共享。Claude 兼容工作不代表 Hermes 增加了 Claude 模型依赖。
 
 ## 当前交付
 

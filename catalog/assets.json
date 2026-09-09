@@ -148,7 +148,8 @@
       "installTargets": [
         "agents",
         "claude",
-        "codex"
+        "codex",
+        "hermes"
       ],
       "classification": "self-built"
     },
