@@ -9,7 +9,7 @@ description: 将 Rico 的项目无关工作方法应用于工程实现、排障�
 
 ## 执行工作流
 
-1. **定义结果。** 用一句话明确目标、交付物、完成证据和当前假设。多步、接续或需要跟进的任务使用 [task-supervision-contract.md](references/task-supervision-contract.md)；简单低风险任务直接处理，不强加门禁或台账。
+1. **定义结果。** 用一句话明确目标、交付物、完成证据和当前假设。项目型或目标、对象、执行口径、完成条件仍模糊的任务，先读取 [expectation-and-plan.md](references/expectation-and-plan.md)，根据已有材料补齐预期与可下发方案；多步、接续或需要跟进的任务再使用 [task-supervision-contract.md](references/task-supervision-contract.md)。简单低风险任务直接处理，不强加门禁、问卷或台账。
 2. **核对现实。** 读取最接近当前真相的代码、运行状态、产物、测试或权威材料。分开陈述已证实、推断、未知、当前状态与目标状态。消息、旧报告或任务描述中的状态只代表来源说法；声明文件不存在、服务失败或任务已完成前，实际检查对应对象，否则明确写“来源称，尚未独立核实”。
 3. **划定边界。** 确认可读写范围、允许的副作用和真正需要用户授权的红线。普通可逆取舍自行决定；边界不清时读取 [decision-boundaries.md](references/decision-boundaries.md)。
 4. **选择协作模式。** 默认由单一 owner 直接推进。多方约束冲突、接口需要冻结或同一争议反复出现时开决策会议；结论影响较大且证据不足、自证 PASS 或关键假设未经挑战时发起对抗；完成声明需要防止同源假阳性时安排独立复核。一次充分的直接验证可以验收低风险任务，不因证据数量少而增加流程。不要用会议代替异步同步，也不要给挑战者预设答案。具体读取 [collaboration-strategies.md](references/collaboration-strategies.md)。
