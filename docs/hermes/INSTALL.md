@@ -5,6 +5,7 @@
 ## 目录
 
 ```text
+${HOME}/.local/share/worklikerico/source         # 统一仓库源码，与运行目录并列
 ${HOME}/.local/share/worklikerico/hermes-agent   # 只放固定上游 checkout
 ${HOME}/.local/share/worklikerico/hermes-venv    # 独立 Python 3.11 runtime
 ${HOME}/.config/worklikerico/hermes              # 隔离 HERMES_HOME
@@ -13,7 +14,7 @@ ${HOME}/.local/bin/hermes                        # 默认使用隔离 Home 的�
 
 不要运行上游的一键安装脚本；下面的命令复用了该脚本的 locked sync，并额外启用固定 lock 中的 `messaging` extra，因为 Telegram 是明确目标。以下基础安装步骤不包含交互 setup、浏览器安装、gateway 安装、auth 导入或 Codex 配置迁移；本机后续实际接入见订阅说明与验收记录。
 
-从统一仓库根目录运行；以下步骤用于新安装，已有配置和入口应先检查再保留：
+从统一仓库根目录运行（README 默认是 `~/.local/share/worklikerico/source`，也可使用其他独立 checkout）；不要把 `~/.local/share/worklikerico` 本身作为源码仓根，否则以下生成的运行目录会阻断要求干净工作区的统一更新。以下步骤用于新安装，已有配置和入口应先检查再保留：
 
 ```bash
 worklikerico_root="$PWD"

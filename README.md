@@ -27,9 +27,11 @@ Hermes 原生负责模型、消息入口、定时任务和看板。本仓库提�
 ## 安装与使用
 
 ```bash
-git clone https://github.com/asunoiwin/worklikerico.git ~/.local/share/worklikerico
-cd ~/.local/share/worklikerico
+git clone https://github.com/asunoiwin/worklikerico.git ~/.local/share/worklikerico/source
+cd ~/.local/share/worklikerico/source
 ```
+
+源码 checkout 使用独立的 `source/` 目录，与 Hermes 的运行目录并列，避免运行文件进入 Git 工作区、阻断更新。已有独立 checkout 可以继续使用，不必迁移。
 
 先查看目录，再按使用的平台安装；默认安装该平台在目录中声明兼容的全部能力：
 
